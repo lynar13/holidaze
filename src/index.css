@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/600.css";
+
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+@layer utilities {
+  .bg-mycolor {
+    background-color: #f8afa6;
+  }
+  .button-color {
+    background-color: #f79489;
+  }
+  .hover-color {
+    background-color: #fadcd9;
+  }
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+}
