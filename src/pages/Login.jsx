@@ -72,14 +72,14 @@ const Login = () => {
       <div className="flex justify-center mb-6 bg-gray-100 p-1 rounded-xl">
         <button
           type="button"
-          className={`w-1/2 py-2 rounded-xl transition-all duration-200 ${accountType === "customer" ? "bg-green-200 font-semibold" : "hover:bg-gray-200"}`}
+          className={`w-1/2 py-2 rounded-xl transition-all duration-200 cursor-pointer ${accountType === "customer" ? "bg-green-200 font-semibold" : "hover:bg-gray-200"}`}
           onClick={() => setAccountType("customer")}
         >
           Customer
         </button>
         <button
           type="button"
-          className={`w-1/2 py-2 rounded-xl transition-all duration-200 ${accountType === "manager" ? "bg-green-200 font-semibold" : "hover:bg-gray-200"}`}
+          className={`w-1/2 py-2 rounded-xl transition-all duration-200 cursor-pointer ${accountType === "manager" ? "bg-green-200 font-semibold" : "hover:bg-gray-200"}`}
           onClick={() => setAccountType("manager")}
         >
           Venue Manager
@@ -116,7 +116,7 @@ const Login = () => {
         <button
           type="submit"
           disabled={loading || !isFormFilled}
-          className="w-full flex justify-center items-center gap-2 text-white py-2 rounded-xl transition button-color disabled:opacity-70"
+          className="w-full flex justify-center items-center gap-2 text-white py-2 rounded-xl transition button-color disabled:opacity-70 cursor-pointer"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />} Login
         </button>

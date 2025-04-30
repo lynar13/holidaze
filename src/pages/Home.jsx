@@ -1,8 +1,8 @@
 // src/pages/Home.jsx
-import { useEffect, useState } from "react";
-import { getVenues } from "../utils/api";
-import SearchBar from "../components/SearchBar";
-import VenueCard from "../components/VenueCard";
+import { useEffect, useState } from 'react';
+import { getVenues } from '../utils/api';
+import SearchBar from '../components/SearchBar';
+import VenueCard from '../components/VenueCard';
 
 export default function Home() {
   const [venues, setVenues] = useState([]);
@@ -33,14 +33,12 @@ export default function Home() {
     if (filters.guests) {
       filtered = filtered.filter((v) => v.maxGuests >= filters.guests);
     }
-    if (filters.sort === "priceAsc") {
+    if (filters.sort === 'priceAsc') {
       filtered.sort((a, b) => a.price - b.price);
-    } else if (filters.sort === "priceDesc") {
+    } else if (filters.sort === 'priceDesc') {
       filtered.sort((a, b) => b.price - a.price);
-    } else if (filters.sort === "available") {
-      filtered = filtered.filter(
-        (v) => bookingsCount(v) < (v.maxGuests || 1)
-      );
+    } else if (filters.sort === 'available') {
+      filtered = filtered.filter((v) => bookingsCount(v) < (v.maxGuests || 1));
     }
     return filtered;
   };
@@ -73,25 +71,59 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="mt-8 flex justify-center items-center gap-4">
+      {/* Enhanced Pagination */}
+      <div className="flex justify-center mt-10 flex-wrap gap-2 text-sm">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          className="px-4 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black hover:text-white cursor-pointer"
         >
-          Prev
+          ← Prev
         </button>
-        <span>Page {currentPage}</span>
+
+        {Array.from(
+          { length: Math.ceil(visibleVenues.length / venuesPerPage) },
+          (_, i) => i + 1
+        )
+          .filter(
+            (num, _, arr) =>
+              num === 1 ||
+              num === arr.length ||
+              Math.abs(num - currentPage) <= 1
+          )
+          .map((num, idx, arr) => {
+            const showEllipsis = idx > 0 && num !== arr[idx - 1] + 1;
+            return (
+              <span key={num} className="flex items-center">
+                {showEllipsis && <span className="px-2">...</span>}
+                <button
+                  onClick={() => setCurrentPage(num)}
+                  className={`px-4 py-2 rounded border hover:bg-rose-400 hover:text-white cursor-pointer ${
+                    num === currentPage
+                      ? 'bg-black text-white font-bold'
+                      : 'bg-white text-black'
+                  }`}
+                >
+                  {num}
+                </button>
+              </span>
+            );
+          })}
+
         <button
           onClick={() =>
             setCurrentPage((prev) =>
-              prev * venuesPerPage < visibleVenues.length ? prev + 1 : prev
+              prev < Math.ceil(visibleVenues.length / venuesPerPage)
+                ? prev + 1
+                : prev
             )
           }
-          disabled={currentPage * venuesPerPage >= visibleVenues.length}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          disabled={
+            currentPage === Math.ceil(visibleVenues.length / venuesPerPage)
+          }
+          className="px-4 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black hover:text-white cursor-pointer"
         >
-          Next
+          Next →
         </button>
       </div>
     </section>

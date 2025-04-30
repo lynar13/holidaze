@@ -112,7 +112,6 @@ const BookingDashboard = () => {
   return (
     <main className="font-[Poppins] max-w-5xl mx-auto px-4">
       <SearchBar onFilterChange={handleSearch} />
-
       {venues.length > 1 && (
         <section className="mb-6">
           <h3 className="text-lg mb-3">Search Results</h3>
@@ -165,42 +164,56 @@ const BookingDashboard = () => {
           </div>
         </section>
       )}
-
       {user?.banner?.url && (
-        <div
-          className="w-full h-52 bg-cover bg-center rounded-xl mb-6"
-          style={{ backgroundImage: `url(${user.banner.url})` }}
-        />
+        <div className="relative mb-24">
+          {/* Banner */}
+          <img
+            src={user.banner.url}
+            alt="Banner"
+            className="w-full h-40 sm:h-56 object-cover rounded-xl"
+          />
+
+          {/* Avatar + User Info Row */}
+          <div className="absolute inset-x-0 bottom-[-7.5rem] flex justify-left">
+            <div className="flex items-center gap-4 p-4">
+              {/* Avatar */}
+              <SafeImage
+                src={
+                  user.avatar?.url ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`
+                }
+                alt="User Avatar"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-white shadow"
+              />
+
+              {/* User Info */}
+              <div className="text-left">
+                <p className="text-lg font-semibold break-words">{user.name}</p>
+                <p className="text-gray-600 text-sm break-words">
+                  {user?.email}
+                </p>
+
+                <button
+                  onClick={() => setShowEditor(true)}
+                  className="mt-2 bg-rose-400 hover:bg-rose-500 text-white px-5 py-1.5 rounded-xl text-sm"
+                >
+                  Edit Profile
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
-      <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4 mb-8">
-        <SafeImage
-          src={user?.avatar?.url}
-          alt="User avatar"
-          className="w-24 h-24 rounded-full border-4 border-white shadow-md"
-        />
-
-        <div className="text-center sm:text-left">
-          <h2 className="text-2xl font-bold break-words">{user?.name}</h2>
-          <p className="text-gray-600 text-sm break-words">{user?.email}</p>
-          <button
-            onClick={() => setShowEditor(true)}
-            className="mt-3 bg-rose-400 text-white px-4 py-2 rounded-xl text-sm"
-          >
-            Edit Profile
-          </button>
-        </div>
-      </div>
-
       {/* Bookings Section */}
-      <section>
+      <section className='p-8'>
         <h3 className="text-xl font-semibold mb-3">
           Bookings ({bookings.length})
         </h3>
         {bookings.length === 0 ? (
           <p className="text-gray-500">No bookings found.</p>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 cursor-pointer">
             {bookings.map((booking) => {
               const venue = booking.venue;
               const image =
@@ -233,6 +246,7 @@ const BookingDashboard = () => {
               return (
                 <div
                   key={booking.id}
+                  onClick={() => navigate(`/bookings/${booking.id}`)}
                   className="flex gap-4 p-4 border rounded-xl shadow hover:bg-gray-50 transition-all"
                 >
                   <SafeImage
@@ -257,9 +271,15 @@ const BookingDashboard = () => {
                       <p>
                         <strong>Dates:</strong> {formattedFrom} → {formattedTo}
                       </p>
+                      <p>
+                        <strong>Price:</strong> ${venue?.price}
+                      </p>
                     </div>
                     <button
-                      onClick={handleCancel}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCancel();
+                      }}
                       className="mt-3 text-red-600 text-sm hover:underline self-start"
                     >
                       Cancel Booking
@@ -271,46 +291,61 @@ const BookingDashboard = () => {
           </div>
         )}
       </section>
-
       {showEditor && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-md space-y-4 relative shadow-lg">
             <button
-              className="absolute top-2 right-3 text-xl"
+              className="absolute top-2 right-3 text-xl cursor-pointer"
               onClick={() => setShowEditor(false)}
             >
               &times;
             </button>
-            <h3 className="text-lg font-semibold">Edit Profile</h3>
-            <label className="block text-sm font-medium">Banner URL</label>
-            <input
-              type="text"
-              value={form.bannerUrl}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, bannerUrl: e.target.value }))
-              }
-              className="w-full border rounded px-3 py-2"
-            />
-            <label>Avatar URL</label>
+            <h3 className="text-lg font-semibold mb-2">Edit Profile</h3>
+
+            {/* Avatar URL input */}
+            <label className="block text-sm font-medium">Avatar URL</label>
             <input
               type="url"
               value={form.avatarUrl}
               onChange={(e) =>
                 setForm((f) => ({ ...f, avatarUrl: e.target.value }))
               }
-              className="w-full border rounded px-3 py-2"
+              className="w-full border px-3 py-2 rounded mb-4"
             />
+
+            {/* Avatar preview */}
             {form.avatarUrl && (
               <SafeImage
                 src={form.avatarUrl}
                 alt="Avatar preview"
-                className="w-20 h-20 mt-2 object-cover rounded-full border"
+                className="w-20 h-20 mx-auto rounded-full mb-4 border object-cover"
               />
             )}
 
+            {/* Banner URL input */}
+            <label className="block text-sm font-medium">Banner URL</label>
+            <input
+              type="url"
+              value={form.bannerUrl}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, bannerUrl: e.target.value }))
+              }
+              className="w-full border px-3 py-2 rounded mb-4"
+            />
+
+            {/* Banner preview */}
+            {form.bannerUrl && (
+              <SafeImage
+                src={form.bannerUrl}
+                alt="Banner preview"
+                className="w-full h-24 object-cover rounded mb-4"
+              />
+            )}
+
+            {/* Save button */}
             <button
               onClick={updateProfile}
-              className="button-color text-white px-4 py-2 rounded-xl"
+              className="button-color text-white px-6 py-2 rounded-2xl hover:bg-black w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
             >
               Save Changes
             </button>

@@ -8,14 +8,19 @@
 @tailwind utilities; */
 
 @layer utilities {
+  .react-datepicker__day--booked {
+    background-color: #fecaca; 
+    color: white !important;             
+    border-radius: 0.3rem;
+  }
   .bg-mycolor {
-    background-color: #f8afa6;
+    background-color: #f89c90;
   }
   .button-color {
     background-color: #f79489;
   }
-  .hover-color {
-    background-color: #fadcd9;
+  .button-color:hover {
+    background-color: #e85c4f;
   }
   @keyframes fade-in {
     0% {

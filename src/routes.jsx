@@ -3,6 +3,7 @@ import { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// Lazy imports (must point to files with default exports)
 const Home = lazy(() => import("./pages/Home"));
 const Venues = lazy(() => import("./pages/Venues"));
 const VenueDetail = lazy(() => import("./pages/VenueDetail"));
@@ -11,6 +12,9 @@ const Register = lazy(() => import("./pages/Register"));
 const CreateVenue = lazy(() => import("./pages/CreateVenue"));
 const BookingDashboard = lazy(() => import("./pages/BookingDashboard"));
 const VenueManagerDashboard = lazy(() => import("./pages/VenueManagerDashboard"));
+const EditVenue = lazy(() => import("./pages/EditVenue"));
+const VenueManagerVenueDetail = lazy(() => import("./pages/VenueManagerVenueDetail"));
+const BookingDetail = lazy(() => import("./pages/BookingDetail"));
 
 const routes = [
   {
@@ -30,6 +34,22 @@ const routes = [
         ),
       },
       {
+        path: "edit-venue/:id",
+        element: (
+          <ProtectedRoute requireManager={true}>
+            <EditVenue />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "venue-manager/:id",
+        element: (
+          <ProtectedRoute requireManager={true}>
+            <VenueManagerVenueDetail />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "customer",
         element: (
           <ProtectedRoute requireManager={false}>
@@ -42,6 +62,14 @@ const routes = [
         element: (
           <ProtectedRoute requireManager={true}>
             <VenueManagerDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "bookings/:id", 
+        element: (
+          <ProtectedRoute requireManager={false}>
+            <BookingDetail />
           </ProtectedRoute>
         ),
       },

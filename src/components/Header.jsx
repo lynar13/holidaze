@@ -59,7 +59,7 @@ export default function Header({ onSearch }) {
                 className="w-8 h-8 rounded-full object-cover border"
               />
               <span className="flex items-center gap-1">
-                Hi, {user.name}
+                {user.name}
                 <ChevronDownIcon
                   className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : 'rotate-0'}`}
                 />
@@ -81,16 +81,16 @@ export default function Header({ onSearch }) {
                 )}
               </div>
               <Link
-                to={user.venueManager ? '/venue-manager' : '/customer'}
+                to={user.venueManager ? '/' : '/'}
                 className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
               >
-                Dashboard
+                Home
               </Link>
               <Link
                 to={user.venueManager ? '/venue-manager' : '/customer'}
                 className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
               >
-                View Profile
+                Dashboard
               </Link>
               <button
                 onClick={handleLogout}

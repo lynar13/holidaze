@@ -10,18 +10,20 @@ const BASE_URL = "https://v2.api.noroff.dev/holidaze/venues";
 export default function CreateVenue() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
   const [form, setForm] = useState({
     name: "",
     description: "",
-    media: [""],
-    price: 0,
-    maxGuests: 1,
+    mediaUrl: "",
+    price: "",
+    maxGuests: "",
     location: {
       address: "",
       city: "",
       country: "",
     },
   });
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,9 +43,15 @@ export default function CreateVenue() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name in form.location) {
-      setForm({ ...form, location: { ...form.location, [name]: value } });
+      setForm((prev) => ({
+        ...prev,
+        location: { ...prev.location, [name]: value },
+      }));
     } else {
-      setForm({ ...form, [name]: value });
+      setForm((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
     }
   };
 
@@ -51,28 +59,35 @@ export default function CreateVenue() {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      await axios.post(BASE_URL, {
-        ...form,
-        media: form.media.filter(Boolean),
-      }, { headers });
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim(),
+      price: Number(form.price),
+      maxGuests: Number(form.maxGuests),
+      media: form.mediaUrl
+        ? [
+            {
+              url: form.mediaUrl.trim(),
+              alt: `Image of ${form.name}`,
+            },
+          ]
+        : [],
+      location: {
+        address: form.location.address.trim(),
+        city: form.location.city.trim(),
+        country: form.location.country.trim(),
+      },
+    };
 
+    try {
+      await axios.post(BASE_URL, payload, { headers });
       toast.success("Venue created successfully!");
-      setForm({
-        name: "",
-        description: "",
-        media: [""],
-        price: 0,
-        maxGuests: 1,
-        location: {
-          address: "",
-          city: "",
-          country: "",
-        },
-      });
+      navigate("/venue-manager");
     } catch (err) {
-      toast.error("Failed to create venue");
       console.error(err);
+      const message =
+        err.response?.data?.errors?.[0]?.message || "Failed to create venue";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -82,15 +97,73 @@ export default function CreateVenue() {
     <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow font-[Poppins]">
       <h1 className="text-2xl font-bold mb-6">Create a New Venue</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="name" placeholder="Venue Name" className="w-full border px-4 py-2 rounded" value={form.name} onChange={handleChange} required />
-        <textarea name="description" placeholder="Description" className="w-full border px-4 py-2 rounded" value={form.description} onChange={handleChange} required />
-        <input name="media" placeholder="Image URL (optional)" className="w-full border px-4 py-2 rounded" value={form.media[0]} onChange={(e) => setForm({ ...form, media: [e.target.value] })} />
-        <input name="price" type="number" placeholder="Price" className="w-full border px-4 py-2 rounded" value={form.price} onChange={handleChange} required />
-        <input name="maxGuests" type="number" placeholder="Max Guests" className="w-full border px-4 py-2 rounded" value={form.maxGuests} onChange={handleChange} required />
-        <input name="address" placeholder="Address" className="w-full border px-4 py-2 rounded" value={form.location.address} onChange={handleChange} />
-        <input name="city" placeholder="City" className="w-full border px-4 py-2 rounded" value={form.location.city} onChange={handleChange} />
-        <input name="country" placeholder="Country" className="w-full border px-4 py-2 rounded" value={form.location.country} onChange={handleChange} />
-        <button type="submit" disabled={loading} className="button-color text-white px-4 py-2 rounded w-full disabled:opacity-50">
+        <input
+          name="name"
+          placeholder="Venue Name"
+          className="w-full border px-4 py-2 rounded"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="description"
+          placeholder="Description"
+          className="w-full border px-4 py-2 rounded"
+          value={form.description}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="mediaUrl"
+          placeholder="Image URL (optional)"
+          className="w-full border px-4 py-2 rounded"
+          value={form.mediaUrl}
+          onChange={handleChange}
+        />
+        <input
+          name="price"
+          type="number"
+          placeholder="Price"
+          className="w-full border px-4 py-2 rounded"
+          value={form.price}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="maxGuests"
+          type="number"
+          placeholder="Max Guests"
+          className="w-full border px-4 py-2 rounded"
+          value={form.maxGuests}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="address"
+          placeholder="Address"
+          className="w-full border px-4 py-2 rounded"
+          value={form.location.address}
+          onChange={handleChange}
+        />
+        <input
+          name="city"
+          placeholder="City"
+          className="w-full border px-4 py-2 rounded"
+          value={form.location.city}
+          onChange={handleChange}
+        />
+        <input
+          name="country"
+          placeholder="Country"
+          className="w-full border px-4 py-2 rounded"
+          value={form.location.country}
+          onChange={handleChange}
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="button-color text-white px-4 py-2 rounded w-full disabled:opacity-50 cursor-pointer"
+        >
           {loading ? "Creating..." : "Create Venue"}
         </button>
       </form>
