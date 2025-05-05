@@ -67,7 +67,7 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto p-8 mt-10 bg-white shadow-xl rounded-2xl font-[Poppins]">
-      <h2 className="text-2xl font-semibold text-center mb-6">Log in to your account</h2>
+      <h2 className="text-4xl font-semibold text-center mb-6">Log in to your account</h2>
 
       <div className="flex justify-center mb-6 bg-gray-100 p-1 rounded-xl">
         <button

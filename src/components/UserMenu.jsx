@@ -4,6 +4,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 
 const BASE_URL = "https://v2.api.noroff.dev/holidaze";
+const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
 
 export default function UserMenu({ user, onLogout }) {
   const [open, setOpen] = useState(false);
@@ -17,7 +18,7 @@ export default function UserMenu({ user, onLogout }) {
   const accessToken = useMemo(() => localStorage.getItem("accessToken"), []);
   const headers = useMemo(() => ({
     Authorization: `Bearer ${accessToken}`,
-    "X-Noroff-API-Key": import.meta.env.VITE_NOROFF_API_KEY,
+    "X-Noroff-API-Key": API_KEY,
   }), [accessToken]);
 
   useEffect(() => {

@@ -114,7 +114,7 @@ const BookingDashboard = () => {
       <SearchBar onFilterChange={handleSearch} />
       {venues.length > 1 && (
         <section className="mb-6">
-          <h3 className="text-lg mb-3">Search Results</h3>
+          <h3 className="text-3xl mb-3">Search Results</h3>
           <div className="grid md:grid-cols-2 gap-4">
             {paginatedVenues.map((venue) => (
               <div
@@ -128,7 +128,7 @@ const BookingDashboard = () => {
                   className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
                 />
                 <div>
-                  <h4 className="font-bold truncate max-w-[220px]">
+                  <h4 className="text-2xl font-bold truncate max-w-[220px]">
                     {venue.name}
                   </h4>
                   <p className="text-sm text-gray-500">
@@ -195,7 +195,7 @@ const BookingDashboard = () => {
 
                 <button
                   onClick={() => setShowEditor(true)}
-                  className="mt-2 bg-rose-400 hover:bg-rose-500 text-white px-5 py-1.5 rounded-xl text-sm"
+                  className="mt-2 button-color text-white px-5 py-1.5 rounded-xl text-sm cursor-pointer"
                 >
                   Edit Profile
                 </button>
@@ -207,7 +207,7 @@ const BookingDashboard = () => {
 
       {/* Bookings Section */}
       <section className='p-8'>
-        <h3 className="text-xl font-semibold mb-3">
+        <h3 className="text-3xl font-semibold mb-3">
           Bookings ({bookings.length})
         </h3>
         {bookings.length === 0 ? (
@@ -260,7 +260,7 @@ const BookingDashboard = () => {
                       <h4 className="font-bold text-lg truncate max-w-[220px]">
                         {venue?.name}
                       </h4>
-                      <p className="text-sm text-gray-500 truncate max-w-[220px]">
+                      <p className="text-sm text-gray-500 max-w-[220px]">
                         {location}
                       </p>
                     </div>
@@ -296,6 +296,7 @@ const BookingDashboard = () => {
           <div className="bg-white p-6 rounded-xl w-full max-w-md space-y-4 relative shadow-lg">
             <button
               className="absolute top-2 right-3 text-xl cursor-pointer"
+      
               onClick={() => setShowEditor(false)}
             >
               &times;

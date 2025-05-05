@@ -117,33 +117,7 @@ const VenueManagerDashboard = () => {
   }
 
   return (
-    <div className="p-4 font-[Poppins] max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h1 className="text-2xl font-bold">
-          Your Managed Venues ({user._count?.venues || venues.length})
-        </h1>
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => navigate('/create-venue')}
-            className="button-color text-white px-4 py-1 rounded-xl flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" /> Create Venue
-          </button>
-          <button
-            onClick={() => setShowEditor(true)}
-            className="button-color text-white px-4 py-1 rounded-xl flex items-center gap-2"
-          >
-            <UserCog className="w-4 h-4" /> Edit Avatar
-          </button>
-          <button
-            onClick={logout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-xl"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-
+    <main className="p-4 font-[Poppins] max-w-6xl mx-auto">
       {/* Banner */}
       {user.banner?.url && (
         <div className="relative mb-12">
@@ -168,91 +142,125 @@ const VenueManagerDashboard = () => {
             {/* User Info */}
             <div>
               <p className="text-lg font-semibold">{user.name}</p>
-              <p className="text-gray-600 text-sm break-words">{user?.email}</p>
+              <p className="text-gray-600 text-xs break-words">{user?.email}</p>
             </div>
           </div>
         </div>
       )}
 
-      {loading ? (
-        <p className="text-center">Loading venues...</p>
-      ) : venues.length === 0 ? (
-        <p className="text-center text-gray-500">No managed venues found.</p>
-      ) : (
-        <div className="grid sm:mt-25 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {venues.map((venue) => {
-            const totalBookings = venue.bookings?.length || 0;
-            const isAvailable = totalBookings < (venue.maxGuests || 1);
-
-            return (
-              <div
-                key={venue.id}
-                className="p-4 border rounded-xl bg-white shadow flex flex-col items-center"
-              >
-                {venue.media?.[0]?.url ? (
-                  <img
-                    src={venue.media[0].url}
-                    alt={venue.media[0].alt || venue.name}
-                    className="w-full h-40 object-cover rounded-md mb-3"
-                  />
-                ) : (
-                  <div className="w-full h-40 bg-gray-200 rounded-md mb-3 flex items-center justify-center text-sm text-gray-500">
-                    No image
-                  </div>
-                )}
-                <h3 className="text-lg font-semibold truncate">{venue.name}</h3>
-                <AvailabilityTag isAvailable={isAvailable} />
-                <p className="text-sm text-gray-600 truncate">
-                  {venue.description || 'No description'}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Price: ${venue.price} • Max Guests: {venue.maxGuests}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Total bookings: {totalBookings}
-                </p>
-                {venue.bookings?.length > 0 && (
-                  <div className="mt-2 text-sm text-center">
-                    <strong>Upcoming bookings:</strong>
-                    <ul className="list-disc ml-5 mt-1 space-y-1">
-                      {venue.bookings.map((b) => (
-                        <li key={b.id}>
-                          {new Date(b.dateFrom).toLocaleDateString()} →{' '}
-                          {new Date(b.dateTo).toLocaleDateString()} • {b.guests}{' '}
-                          guest{b.guests > 1 ? 's' : ''}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                <div className="flex gap-2 mt-3">
-                  <button
-                    onClick={() => navigate(`/edit-venue/${venue.id}`)}
-                    className="p-2 rounded hover:bg-gray-100 text-blue-500"
-                    title="Edit"
-                  >
-                    <Pencil className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(venue.id)}
-                    className="p-2 rounded hover:bg-gray-100 text-red-500"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+      {/* Managed Venues */}
+      <section className="mb-12 py-6 px-2">
+        <div className="mt-4 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 px-2 sm:px-4">
+          <h1 className="text-5xl font-bold">
+            Your Managed Venues ({user._count?.venues || venues.length})
+          </h1>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => navigate('/create-venue')}
+              className="button-color text-white px-4 py-1 rounded-xl flex items-center gap-2 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" /> Create Venue
+            </button>
+            <button
+              onClick={() => setShowEditor(true)}
+              className="button-color text-white px-4 py-1 rounded-xl flex items-center gap-2 cursor-pointer"
+            >
+              <UserCog className="w-4 h-4" /> Edit Avatar
+            </button>
+          </div>
         </div>
-      )}
+
+        {loading ? (
+          <p className="text-center text-gray-500 py-6">Loading venues...</p>
+        ) : venues.length === 0 ? (
+          <p className="text-center text-gray-400 py-6">
+            No managed venues found.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:px-4 p-2">
+            {venues.map((venue) => {
+              const totalBookings = venue.bookings?.length || 0;
+              const isAvailable = totalBookings < (venue.maxGuests || 1);
+
+              return (
+                <div
+                  key={venue.id}
+                  onClick={() => navigate(`/venue-manager/${venue.id}`)}
+                  className="p-4 border rounded-xl bg-white shadow flex flex-col items-center cursor-pointer hover:ring-2 hover:ring-rose-300 animate-fade-in hover:scale-[1.02] transition"
+                >
+                  {venue.media?.[0]?.url ? (
+                    <img
+                      src={venue.media[0].url}
+                      alt={venue.media[0].alt || venue.name}
+                      className="w-full h-40 object-cover rounded-md mb-3"
+                    />
+                  ) : (
+                    <div className="w-full h-40 bg-gray-200 rounded-md mb-3 flex items-center justify-center text-sm text-gray-500">
+                      No image
+                    </div>
+                  )}
+                  <h3 className="text-lg font-semibold truncate">
+                    {venue.name}
+                  </h3>
+                  <AvailabilityTag isAvailable={isAvailable} />
+                  <p className="text-sm text-gray-600 mt-1">
+                    {venue.description || 'No description'}
+                  </p>
+                  <p className="text-sm text-gray-500 font-semibold mt-1">
+                    Price: ${venue.price} • Max Guests: {venue.maxGuests}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Total bookings: {totalBookings}
+                  </p>
+                  {venue.bookings?.length > 0 && (
+                    <div className="mt-2 text-sm text-center">
+                      <strong>Upcoming bookings:</strong>
+                      <ul className="list-disc ml-5 mt-1 space-y-1">
+                        {venue.bookings.map((b) => (
+                          <li key={b.id}>
+                            {new Date(b.dateFrom).toLocaleDateString()} →{' '}
+                            {new Date(b.dateTo).toLocaleDateString()} •{' '}
+                            {b.guests} guest{b.guests > 1 ? 's' : ''}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/edit-venue/${venue.id}`);
+                      }}
+                      className="p-2 rounded hover:bg-gray-100 text-blue-500"
+                      title="Edit"
+                    >
+                      <Pencil className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(venue.id);
+                      }}
+                      className="p-2 rounded hover:bg-gray-100 text-red-500"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
       {showEditor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-xl relative">
             <button
               onClick={() => setShowEditor(false)}
-              className="absolute top-2 right-4 text-2xl"
+              className="absolute top-2 right-4 text-2xl cursor-pointer"
             >
               &times;
             </button>
@@ -287,7 +295,7 @@ const VenueManagerDashboard = () => {
             )}
             <button
               onClick={handleAvatarUpdate}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl w-full"
+              className="button-color text-white px-6 py-2 rounded-2xl hover:bg-black w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
             >
               Save Changes
             </button>
@@ -296,7 +304,7 @@ const VenueManagerDashboard = () => {
       )}
 
       {/* All Venues Paginated Section */}
-      <hr className="my-10" />
+      <hr className="my-10 text-gray-300" />
       <h2 className="text-2xl font-bold text-center mb-4">
         All Venues on Holidaze
       </h2>
@@ -305,7 +313,7 @@ const VenueManagerDashboard = () => {
         <p className="text-center text-gray-400">Loading all venues...</p>
       ) : (
         <>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
             {allVenues.map((venue, index) => (
               <VenueCard
                 key={venue.id}
@@ -339,7 +347,7 @@ const VenueManagerDashboard = () => {
           </div>
         </>
       )}
-    </div>
+    </main>
   );
 };
 

@@ -132,7 +132,7 @@ export default function VenueDetail() {
     <main className="font-[Poppins] max-w-4xl mx-auto p-4">
       <button
         onClick={() => navigate(-1)}
-        className="inline-flex items-center button-color text-white gap-2 px-4 py-2 rounded-lg sm:w-auto transition-transform duration-150 hover:scale-[1.02] mb-6 cursor-pointer"
+        className="inline-flex items-center button-color text-white gap-2 px-4 py-2 rounded-2xl sm:w-auto transition-transform duration-150 hover:scale-[1.02] mb-6 cursor-pointer"
       >
         <span className="text-lg"></span> Back
       </button>

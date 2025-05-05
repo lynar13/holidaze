@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { getVenues } from '../utils/api';
 import SearchBar from '../components/SearchBar';
 import VenueCard from '../components/VenueCard';
+import Slider from 'react-slick';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
   const [venues, setVenues] = useState([]);
@@ -10,10 +12,17 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const venuesPerPage = 6;
 
+  const [featuredVenues, setFeaturedVenues] = useState([]);
+
   useEffect(() => {
     async function fetchVenues() {
       const data = await getVenues();
       setVenues(data);
+
+      // Pick 3 random venues with images
+      const withImages = data.filter((v) => v.media?.length > 0);
+      const shuffled = withImages.sort(() => 0.5 - Math.random());
+      setFeaturedVenues(shuffled.slice(0, 3));
     }
     fetchVenues();
   }, []);
@@ -51,16 +60,56 @@ export default function Home() {
   );
 
   return (
-    <section className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold font-[Poppins] mb-6 text-center">
+    <main className="container mx-auto py-8 font-[Poppins] p-4">
+      {featuredVenues.length > 0 && (
+        <section className="relative w-full h-[300px] sm:h-[360px] md:h-[420px] rounded-3xl shadow mb-10 overflow-hidden">
+          <Slider
+            autoplay
+            autoplaySpeed={6000}
+            infinite
+            arrows={false}
+            dots
+            pauseOnHover
+          >
+            {featuredVenues.map((venue) => (
+              <div
+                key={venue.id}
+                className="relative w-full h-[300px] sm:h-[360px] md:h-[420px]"
+              >
+                <img
+                  src={venue.media[0].url}
+                  alt={venue.name}
+                  className="absolute inset-0 w-full h-full object-cover brightness-75"
+                />
+                <div className="relative z-10 px-6 text-center flex flex-col justify-center items-center h-full text-white">
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-2 drop-shadow-lg">
+                    {venue.name}
+                  </h2>
+                  <p className="text-sm sm:text-base drop-shadow-md mb-3">
+                    📍 {venue.location?.city}, {venue.location?.country}
+                  </p>
+                  <Link
+                    to={`/venues/${venue.id}`}
+                    className="inline-block mt-2 px-5 py-2 rounded-2xl bg-white text-black text-sm font-semibold hover:bg-rose-100 transition"
+                  >
+                    View Venue
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </section>
+      )}
+
+      <h1 className="text-5xl font-bold mb-6 text-center">
         Your Next Destination
       </h1>
 
-      <div className="flex justify-center mb-6">
+      <div className="max-w-5xl mx-auto mb-8">
         <SearchBar onFilterChange={setFilters} />
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
         {paginatedVenues.map((venue, index) => (
           <VenueCard
             key={venue.id}
@@ -71,7 +120,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Enhanced Pagination */}
+      {/* Pagination */}
       <div className="flex justify-center mt-10 flex-wrap gap-2 text-sm">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -126,6 +175,6 @@ export default function Home() {
           Next →
         </button>
       </div>
-    </section>
+    </main>
   );
 }

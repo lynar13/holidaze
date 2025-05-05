@@ -1,58 +1,48 @@
 // src/pages/CreateVenue.jsx
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import VenueForm from '../components/VenueForm';
+import VenuePreviewCard from '../components/VenuePreviewCard';
+import BackButton from '../components/BackButton';
 
-const BASE_URL = "https://v2.api.noroff.dev/holidaze/venues";
+const BASE_URL = 'https://v2.api.noroff.dev/holidaze/venues';
+const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
 
 export default function CreateVenue() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
-    description: "",
-    mediaUrl: "",
-    price: "",
-    maxGuests: "",
+    name: '',
+    description: '',
+    price: '',
+    maxGuests: '',
     location: {
-      address: "",
-      city: "",
-      country: "",
+      address: '',
+      city: '',
+      country: '',
     },
+    mediaUrls: [''],
   });
 
+  const [mediaUrls, setMediaUrls] = useState(['']);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     if (!user.venueManager) {
-      toast.error("Access denied: Only venue managers can create venues.");
-      navigate("/customer");
+      toast.error('Access denied: Only venue managers can create venues.');
+      navigate('/customer');
     }
   }, [user, navigate]);
 
-  const accessToken = localStorage.getItem("accessToken");
+  const accessToken = localStorage.getItem('accessToken');
   const headers = {
     Authorization: `Bearer ${accessToken}`,
-    "X-Noroff-API-Key": import.meta.env.VITE_NOROFF_API_KEY,
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name in form.location) {
-      setForm((prev) => ({
-        ...prev,
-        location: { ...prev.location, [name]: value },
-      }));
-    } else {
-      setForm((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    'X-Noroff-API-Key': API_KEY,
   };
 
   const handleSubmit = async (e) => {
@@ -64,14 +54,12 @@ export default function CreateVenue() {
       description: form.description.trim(),
       price: Number(form.price),
       maxGuests: Number(form.maxGuests),
-      media: form.mediaUrl
-        ? [
-            {
-              url: form.mediaUrl.trim(),
-              alt: `Image of ${form.name}`,
-            },
-          ]
-        : [],
+      media: mediaUrls
+        .filter((url) => url.trim() !== '')
+        .map((url, i) => ({
+          url: url.trim(),
+          alt: `Image ${i + 1} of ${form.name}`,
+        })),
       location: {
         address: form.location.address.trim(),
         city: form.location.city.trim(),
@@ -81,12 +69,11 @@ export default function CreateVenue() {
 
     try {
       await axios.post(BASE_URL, payload, { headers });
-      toast.success("Venue created successfully!");
-      navigate("/venue-manager");
+      toast.success('Venue created successfully!');
+      navigate('/venue-manager');
     } catch (err) {
-      console.error(err);
       const message =
-        err.response?.data?.errors?.[0]?.message || "Failed to create venue";
+        err.response?.data?.errors?.[0]?.message || 'Failed to create venue';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -94,79 +81,23 @@ export default function CreateVenue() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-8 bg-white rounded-xl shadow font-[Poppins]">
-      <h1 className="text-2xl font-bold mb-6">Create a New Venue</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          name="name"
-          placeholder="Venue Name"
-          className="w-full border px-4 py-2 rounded"
-          value={form.name}
-          onChange={handleChange}
-          required
+    <main className="max-w-6xl mx-auto p-6 sm:p-10 bg-white shadow-xl rounded-3xl mt-10 font-[Poppins]">
+      <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">
+        Create a New Venue
+      </h1>
+      <div className="grid md:grid-cols-2 gap-10 items-start">
+        <VenueForm
+          form={form}
+          setForm={setForm}
+          mediaUrls={mediaUrls}
+          setMediaUrls={setMediaUrls}
+          onSubmit={handleSubmit}
+          loading={loading}
+          submitLabel="Create Venue"
         />
-        <textarea
-          name="description"
-          placeholder="Description"
-          className="w-full border px-4 py-2 rounded"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="mediaUrl"
-          placeholder="Image URL (optional)"
-          className="w-full border px-4 py-2 rounded"
-          value={form.mediaUrl}
-          onChange={handleChange}
-        />
-        <input
-          name="price"
-          type="number"
-          placeholder="Price"
-          className="w-full border px-4 py-2 rounded"
-          value={form.price}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="maxGuests"
-          type="number"
-          placeholder="Max Guests"
-          className="w-full border px-4 py-2 rounded"
-          value={form.maxGuests}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="address"
-          placeholder="Address"
-          className="w-full border px-4 py-2 rounded"
-          value={form.location.address}
-          onChange={handleChange}
-        />
-        <input
-          name="city"
-          placeholder="City"
-          className="w-full border px-4 py-2 rounded"
-          value={form.location.city}
-          onChange={handleChange}
-        />
-        <input
-          name="country"
-          placeholder="Country"
-          className="w-full border px-4 py-2 rounded"
-          value={form.location.country}
-          onChange={handleChange}
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="button-color text-white px-4 py-2 rounded w-full disabled:opacity-50 cursor-pointer"
-        >
-          {loading ? "Creating..." : "Create Venue"}
-        </button>
-      </form>
-    </div>
+        <VenuePreviewCard venue={{ ...form, mediaUrls }} />
+      </div>
+      <BackButton />
+    </main>
   );
 }

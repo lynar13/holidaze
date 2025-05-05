@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "@fontsource/poppins/400.css";
 @import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import 'slick-carousel/slick/slick.css';
+@import 'slick-carousel/slick/slick-theme.css';
+
 
 
 /* @tailwind base;
@@ -14,14 +18,16 @@
     border-radius: 0.3rem;
   }
   .bg-mycolor {
-    background-color: #f89c90;
+    background-color: #D98969;
   }
   .button-color {
-    background-color: #f79489;
+    background-color: #C07059;
   }
   .button-color:hover {
     background-color: #e85c4f;
   }
+  
+
   @keyframes fade-in {
     0% {
       opacity: 0;
@@ -32,7 +38,6 @@
       transform: translateY(0);
     }
   }
-
   .animate-fade-in {
     animation: fade-in 0.5s ease-out forwards;
   }

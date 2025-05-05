@@ -85,7 +85,7 @@ const BookingDetail = () => {
         />
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">{venue?.name}</h1>
+          <h1 className="text-5xl font-bold">{venue?.name}</h1>
           <p className="text-gray-600">
             {venue?.location?.address} {venue?.location?.city},{' '}
             {venue?.location?.country}
@@ -99,18 +99,18 @@ const BookingDetail = () => {
               <strong>Dates:</strong> {formattedFrom} → {formattedTo}
             </p>
             <p>
-              <strong>Price per night:</strong> kr{venue?.price}
+              <strong>Price per night:</strong> ${venue?.price}
             </p>
             <p>
               <strong>Total nights:</strong> {totalNights} night
               {totalNights !== 1 ? 's' : ''}
             </p>
             <p className="text-lg font-semibold mt-2">
-              Grand Total: kr{grandTotal}
+              Grand Total: ${grandTotal}
             </p>
           </div>
           <div className="border-t pt-6 mt-6">
-            <h2 className="text-xl font-semibold mb-3">Customer Information</h2>
+            <h2 className="text-4xl font-semibold mb-3">Customer Information</h2>
 
             <div className="flex items-center gap-4">
               <SafeImage
@@ -129,7 +129,7 @@ const BookingDetail = () => {
 
           <button
             onClick={handleCancelBooking}
-            className="mt-6 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm"
+            className="mt-6 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-2xl text-sm"
           >
             Cancel Booking
           </button>
