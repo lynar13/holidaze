@@ -28,7 +28,9 @@ export default function VenueForm({
     <form onSubmit={onSubmit} className="space-y-8 w-full">
       {/* Venue Details */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Venue Details</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          Venue Details
+        </h2>
         <div className="grid sm:grid-cols-2 gap-6">
           <input
             name="name"
@@ -61,7 +63,9 @@ export default function VenueForm({
 
       {/* Description */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Description</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+          Description
+        </h2>
         <textarea
           name="description"
           placeholder="Write a short description..."

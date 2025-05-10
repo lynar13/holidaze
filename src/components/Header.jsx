@@ -102,8 +102,8 @@ export default function Header({ onSearch }) {
           </div>
         ) : (
           <div className="flex space-x-4">
-            <Link to="/login" className="text-white font-bold font-[Poppins] hover:text-burntPeach">Login</Link>
-            <Link to="/register" className="text-white font-bold font-[Poppins] hover:text-burntPeach">Register</Link>
+            <Link to="/login" className="text-white font-bold font-[Poppins]">Login</Link>
+            <Link to="/register" className="text-white font-bold font-[Poppins]">Register</Link>
           </div>
         )}
       </nav>

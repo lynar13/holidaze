@@ -47,7 +47,11 @@ export default function Home() {
     } else if (filters.sort === 'priceDesc') {
       filtered.sort((a, b) => b.price - a.price);
     } else if (filters.sort === 'available') {
-      filtered = filtered.filter((v) => bookingsCount(v) < (v.maxGuests || 1));
+      filtered = filtered.filter(
+        (v) => (v.meta?.bookings?.length || 0) < (v.maxGuests || 1)
+      );
+    } else if (filters.sort === 'ratingDesc') {
+      filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     }
     return filtered;
   };
@@ -90,7 +94,7 @@ export default function Home() {
                   </p>
                   <Link
                     to={`/venues/${venue.id}`}
-                    className="inline-block mt-2 px-5 py-2 rounded-2xl bg-white text-black text-sm font-semibold hover:bg-rose-100 transition"
+                    className="inline-block mt-2 px-5 py-2 rounded-2xl button-color text-white text-sm font-semibold hover:bg-rose-100 transition"
                   >
                     View Venue
                   </Link>
@@ -105,11 +109,11 @@ export default function Home() {
         Your Next Destination
       </h1>
 
-      <div className="max-w-5xl mx-auto mb-8">
+      <div className="relative z-20 max-w-5xl mx-auto mb-8">
         <SearchBar onFilterChange={setFilters} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
+      <div className="relative z-10 mb-8 max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
         {paginatedVenues.map((venue, index) => (
           <VenueCard
             key={venue.id}
@@ -125,7 +129,7 @@ export default function Home() {
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-4 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black hover:text-white cursor-pointer"
+          className="px-4 py-2 border-2 border-[#C07059] rounded-2xl bg-white shadow-xl hover:bg-[#e85c4f] disabled:opacity-50"
         >
           ← Prev
         </button>
@@ -147,7 +151,7 @@ export default function Home() {
                 {showEllipsis && <span className="px-2">...</span>}
                 <button
                   onClick={() => setCurrentPage(num)}
-                  className={`px-4 py-2 rounded border hover:bg-rose-400 hover:text-white cursor-pointer ${
+                  className={`px-4 py-2 rounded-2xl border hover:bg-[#e85c4f] hover:text-white cursor-pointer ${
                     num === currentPage
                       ? 'bg-black text-white font-bold'
                       : 'bg-white text-black'
@@ -170,7 +174,7 @@ export default function Home() {
           disabled={
             currentPage === Math.ceil(visibleVenues.length / venuesPerPage)
           }
-          className="px-4 py-2 rounded border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black hover:text-white cursor-pointer"
+          className="px-4 py-2 border-2 border-[#C07059] rounded-2xl shadow-2xl bg-white hover:bg-[#e85c4f] disabled:opacity-50"
         >
           Next →
         </button>

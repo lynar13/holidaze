@@ -7,14 +7,17 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import AvailabilityTag from '../components/AvailabilityTag';
 import { Pencil, Trash2, Plus, UserCog } from 'lucide-react';
+import SearchBar from '../components/SearchBar';
 
 const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
 const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
 
 const VenueManagerDashboard = () => {
-  const { user, logout, setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
-  const [venues, setVenues] = useState([]);
+  const [managedVenues, setManagedVenues] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchResultsPage, setSearchResultsPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar?.url || '');
@@ -26,13 +29,13 @@ const VenueManagerDashboard = () => {
     'X-Noroff-API-Key': API_KEY,
   };
 
-  const fetchVenues = async () => {
+  const fetchManagedVenues = async () => {
     try {
       const res = await axios.get(
         `${BASE_URL}/profiles/${user.name}/venues?_bookings=true`,
         { headers }
       );
-      setVenues(res.data.data || []);
+      setManagedVenues(res.data.data || []);
     } catch (err) {
       toast.error('Error fetching venues');
     } finally {
@@ -41,40 +44,14 @@ const VenueManagerDashboard = () => {
   };
 
   useEffect(() => {
-    if (user?.venueManager && user.name) fetchVenues();
+    if (user?.venueManager && user.name) fetchManagedVenues();
   }, [user]);
-
-  const [allVenues, setAllVenues] = useState([]);
-  const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const LIMIT = 6;
-  const [loadingAllVenues, setLoadingAllVenues] = useState(false);
-
-  const fetchAllVenues = async () => {
-    setLoadingAllVenues(true);
-    try {
-      const res = await axios.get(
-        `${BASE_URL}/venues?limit=${LIMIT}&page=${page}`
-      );
-      setAllVenues(res.data.data || []);
-      setTotalCount(res.data.meta?.totalCount || 0);
-    } catch (err) {
-      toast.error('Error loading all venues');
-    } finally {
-      setLoadingAllVenues(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAllVenues();
-  }, [page]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this venue?')) return;
-
     try {
       await axios.delete(`${BASE_URL}/venues/${id}`, { headers });
-      setVenues((prev) => prev.filter((v) => v.id !== id));
+      setManagedVenues((prev) => prev.filter((v) => v.id !== id));
       toast.success('Venue deleted');
     } catch (err) {
       toast.error('Failed to delete venue');
@@ -112,6 +89,42 @@ const VenueManagerDashboard = () => {
     }
   };
 
+  const handleSearch = async (filters) => {
+    try {
+      const res = await axios.get(`${BASE_URL}/venues`, { headers });
+      const data = res.data.data;
+
+      const searchTerm = (filters.search || '').toLowerCase();
+      const matches = data.filter((v) => {
+        const name = v.name?.toLowerCase() || '';
+        const city = v.location?.city?.toLowerCase() || '';
+        const country = v.location?.country?.toLowerCase() || '';
+        const address = v.location?.address?.toLowerCase() || '';
+        return (
+          name.includes(searchTerm) ||
+          city.includes(searchTerm) ||
+          country.includes(searchTerm) ||
+          address.includes(searchTerm)
+        );
+      });
+
+      if (matches.length === 1) {
+        navigate(`/venues/${matches[0].id}`);
+      } else {
+        setSearchResults(matches);
+        setSearchResultsPage(1);
+      }
+    } catch (err) {
+      toast.error('Search failed');
+    }
+  };
+
+  const venuesPerPage = 6;
+  const paginatedSearchResults = searchResults.slice(
+    (searchResultsPage - 1) * venuesPerPage,
+    searchResultsPage * venuesPerPage
+  );
+
   if (!user?.venueManager) {
     return <div className="text-center p-6 font-[Poppins]">Unauthorized</div>;
   }
@@ -126,20 +139,17 @@ const VenueManagerDashboard = () => {
             alt="Banner"
             className="w-full h-40 object-cover rounded-xl"
           />
-
-          {/* Avatar & Text Container */}
+          {/* Avatar + User Info Row */}
           <div className="absolute left-4 bottom-[-5rem] sm:left-8 flex items-center gap-4 p-2">
-            {/* Avatar */}
             <img
               src={
                 user.avatar?.url ||
                 `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`
               }
               alt="Avatar"
-              className="w-20 h-20 rounded-full border-4 border-white shadow"
+              className="w-24 h-24 rounded-full border-4 border-white shadow"
             />
 
-            {/* User Info */}
             <div>
               <p className="text-lg font-semibold">{user.name}</p>
               <p className="text-gray-600 text-xs break-words">{user?.email}</p>
@@ -148,11 +158,57 @@ const VenueManagerDashboard = () => {
         </div>
       )}
 
+      <div className="relative z-20 max-w-5xl mx-auto mb-8 bottom-[-4rem]">
+        <SearchBar onFilterChange={handleSearch} />
+      </div>
+
+      {/* Search Results Section */}
+      {searchResults.length > 0 && (
+        <section className="mb-8 p-8">
+          <h3 className="text-3xl font-semibold mb-4">Search Results</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
+            {paginatedSearchResults.map((venue, index) => (
+              <VenueCard
+                key={venue.id}
+                venue={venue}
+                index={index}
+                filters={{}}
+              />
+            ))}
+          </div>
+          <div className="mt-4 flex justify-center items-center gap-4">
+            <button
+              onClick={() =>
+                setSearchResultsPage((prev) => Math.max(prev - 1, 1))
+              }
+              disabled={searchResultsPage === 1}
+              className="px-3 py-1 button-color text-white rounded-2xl disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <span>Page {searchResultsPage}</span>
+            <button
+              onClick={() =>
+                setSearchResultsPage((prev) =>
+                  prev * venuesPerPage < searchResults.length ? prev + 1 : prev
+                )
+              }
+              disabled={
+                searchResultsPage * venuesPerPage >= searchResults.length
+              }
+              className="px-3 py-1 button-color text-white rounded-2xl disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </section>
+      )}
+
       {/* Managed Venues */}
       <section className="mb-12 py-6 px-2">
         <div className="mt-4 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 px-2 sm:px-4">
           <h1 className="text-5xl font-bold">
-            Your Managed Venues ({user._count?.venues || venues.length})
+            Your Managed Venues ({user._count?.venues || managedVenues.length})
           </h1>
           <div className="flex flex-wrap gap-2">
             <button
@@ -172,13 +228,13 @@ const VenueManagerDashboard = () => {
 
         {loading ? (
           <p className="text-center text-gray-500 py-6">Loading venues...</p>
-        ) : venues.length === 0 ? (
+        ) : managedVenues.length === 0 ? (
           <p className="text-center text-gray-400 py-6">
             No managed venues found.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:px-4 p-2">
-            {venues.map((venue) => {
+            {managedVenues.map((venue) => {
               const totalBookings = venue.bookings?.length || 0;
               const isAvailable = totalBookings < (venue.maxGuests || 1);
 
@@ -186,7 +242,7 @@ const VenueManagerDashboard = () => {
                 <div
                   key={venue.id}
                   onClick={() => navigate(`/venue-manager/${venue.id}`)}
-                  className="p-4 border rounded-xl bg-white shadow flex flex-col items-center cursor-pointer hover:ring-2 hover:ring-rose-300 animate-fade-in hover:scale-[1.02] transition"
+                  className="p-4 border-2 border-[#C07059] bg-white hover:ring-2 hover:ring-[#e85c4f] rounded-2xl shadow flex flex-col items-center cursor-pointer animate-fade-in hover:scale-[1.02] transition"
                 >
                   {venue.media?.[0]?.url ? (
                     <img
@@ -212,20 +268,6 @@ const VenueManagerDashboard = () => {
                   <p className="text-sm text-gray-500">
                     Total bookings: {totalBookings}
                   </p>
-                  {venue.bookings?.length > 0 && (
-                    <div className="mt-2 text-sm text-center">
-                      <strong>Upcoming bookings:</strong>
-                      <ul className="list-disc ml-5 mt-1 space-y-1">
-                        {venue.bookings.map((b) => (
-                          <li key={b.id}>
-                            {new Date(b.dateFrom).toLocaleDateString()} →{' '}
-                            {new Date(b.dateTo).toLocaleDateString()} •{' '}
-                            {b.guests} guest{b.guests > 1 ? 's' : ''}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                   <div className="flex gap-2 mt-3">
                     <button
                       onClick={(e) => {
@@ -255,6 +297,7 @@ const VenueManagerDashboard = () => {
         )}
       </section>
 
+      {/* Avatar Editor */}
       {showEditor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-xl relative">
@@ -295,57 +338,12 @@ const VenueManagerDashboard = () => {
             )}
             <button
               onClick={handleAvatarUpdate}
-              className="button-color text-white px-6 py-2 rounded-2xl hover:bg-black w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
+              className="button-color text-white px-6 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
             >
               Save Changes
             </button>
           </div>
         </div>
-      )}
-
-      {/* All Venues Paginated Section */}
-      <hr className="my-10 text-gray-300" />
-      <h2 className="text-2xl font-bold text-center mb-4">
-        All Venues on Holidaze
-      </h2>
-
-      {loadingAllVenues ? (
-        <p className="text-center text-gray-400">Loading all venues...</p>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
-            {allVenues.map((venue, index) => (
-              <VenueCard
-                key={venue.id}
-                venue={venue}
-                index={index}
-                filters={{}}
-              />
-            ))}
-          </div>
-
-          <div className="flex justify-center items-center gap-4 mt-8 text-sm">
-            <button
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              disabled={page === 1}
-              className="px-4 py-2 border rounded-xl bg-white hover:bg-gray-100 disabled:opacity-50"
-            >
-              Prev
-            </button>
-            <span className="font-medium">
-              Page {page} of {Math.ceil(totalCount / LIMIT)}
-            </span>
-            <button
-              onClick={() =>
-                setPage((p) => (p < Math.ceil(totalCount / LIMIT) ? p + 1 : p))
-              }
-              disabled={page === Math.ceil(totalCount / LIMIT)}
-              className="px-4 py-2 border rounded-xl bg-white hover:bg-gray-100 disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
-        </>
       )}
     </main>
   );

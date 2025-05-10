@@ -20,6 +20,7 @@ export default function CreateVenue() {
     description: '',
     price: '',
     maxGuests: '',
+    rating: 0, // ✅ FIX: ensure rating field is initialized
     location: {
       address: '',
       city: '',
@@ -65,7 +66,7 @@ export default function CreateVenue() {
         city: form.location.city.trim(),
         country: form.location.country.trim(),
       },
-    };
+    };    
 
     try {
       await axios.post(BASE_URL, payload, { headers });
@@ -95,7 +96,7 @@ export default function CreateVenue() {
           loading={loading}
           submitLabel="Create Venue"
         />
-        <VenuePreviewCard venue={{ ...form, mediaUrls }} />
+        <VenuePreviewCard venue={{ ...form, media: mediaUrls.map((url, i) => ({ url, alt: `Image ${i + 1} of ${form.name}` })) }} />
       </div>
       <BackButton />
     </main>

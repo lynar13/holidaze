@@ -18,10 +18,25 @@ function VenueCard({ venue, index, filters }) {
   const isNew =
     new Date(venue.created) > new Date(Date.now() - 1000 * 60 * 60 * 24 * 14); // last 14 days
 
+  const renderStars = (rating = 0) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <span className="text-yellow-500 text-sm">
+        {'★'.repeat(fullStars)}
+        {halfStar && '½'}
+        {'☆'.repeat(emptyStars)}
+        <span className="ml-1 text-gray-600">({rating.toFixed(1)})</span>
+      </span>
+    );
+  };
+
   return (
     <main className="font-[Poppins]">
       <div
-        className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition bg-white relative animate-fade-in hover:scale-[1.02] hover:ring-2 hover:ring-rose-300"
+        className="border-2 border-[#C07059] rounded-2xl overflow-hidden shadow hover:shadow-lg transition bg-white relative animate-fade-in hover:scale-[1.02] hover:ring-2 hover:ring-[#C07059]"
         style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'both' }}
       >
         {image && (
@@ -47,24 +62,24 @@ function VenueCard({ venue, index, filters }) {
           </div>
         )}
 
-        <div className="p-4 space-y-1 sm:space-y-2">
+        <section className="p-4 space-y-1 sm:space-y-2">
           <h2
-            className="text-base sm:text-lg font-semibold truncate"
+            className="flex justify-center text-base sm:text-lg font-semibold truncate"
             title={venue.name}
           >
             {venue.name}
           </h2>
 
           <p
-            className="text-sm text-gray-600 truncate"
+            className="flex justify-center text-sm text-gray-600 truncate"
             title={venue.description}
           >
             {venue.description}
           </p>
 
-          <p className="text-sm text-gray-500">{location}</p>
+          <p className="flex justify-center text-sm text-gray-500">{location}</p>
 
-          <p className="text-sm font-medium text-gray-800">
+          <p className="flex justify-center text-sm font-medium text-gray-800">
             ${venue.price} / night
           </p>
 
@@ -75,6 +90,10 @@ function VenueCard({ venue, index, filters }) {
             </p>
           )}
 
+          {venue.rating !== undefined && (
+            <p className="flex justify-center text-sm">{renderStars(venue.rating)}</p>
+          )}
+         
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-3">
             <AvailabilityTag isAvailable={available} />
             {available && (
@@ -86,7 +105,7 @@ function VenueCard({ venue, index, filters }) {
               </Link>
             )}
           </div>
-        </div>
+        </section>
       </div>
     </main>
   );

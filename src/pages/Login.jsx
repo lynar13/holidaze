@@ -1,26 +1,25 @@
 // src/pages/Login.jsx
-import React from "react";
-import { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
-import PasswordInput from "../components/PasswordInput";
-import { Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+import PasswordInput from '../components/PasswordInput';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const { login, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || (user?.venueManager ? "/venue-manager" : "/customer");
 
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [accountType, setAccountType] = useState("customer");
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [accountType, setAccountType] = useState('customer');
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(false);
 
   useEffect(() => {
-    const cachedEmail = localStorage.getItem("remember_email");
+    const cachedEmail = localStorage.getItem('remember_email');
     if (cachedEmail) {
       setForm((prev) => ({ ...prev, email: cachedEmail }));
       setRemember(true);
@@ -28,15 +27,14 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    if (user && typeof user.name === "string") {
-      const from = location.state?.from?.pathname || (user.venueManager ? "/venue-manager" : "/customer");
-      navigate(from, { replace: true });
-      setTimeout(() => {
-        toast.success(`Welcome back, ${user.name}!`);
-      }, 100);
+    if (user && typeof user.name === 'string') {
+      const destination =
+        location.state?.from?.pathname ||
+        (user?.venueManager === true ? '/venue-manager' : '/customer');
+
+      navigate(destination, { replace: true });
     }
   }, [user, location.state?.from, navigate]);
-  
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -46,16 +44,26 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!form.email.endsWith("@stud.noroff.no")) {
-      toast.error("Email must end with @stud.noroff.no");
+    if (!form.email.endsWith('@stud.noroff.no')) {
+      toast.error('Email must end with @stud.noroff.no');
       setLoading(false);
       return;
     }
 
     try {
-      await login(form);
-      if (remember) localStorage.setItem("remember_email", form.email);
-      else localStorage.removeItem("remember_email");
+      const loggedInUser = await login(form); // 👈 use returned value
+      if (remember) {
+        localStorage.setItem('remember_email', form.email);
+      } else {
+        localStorage.removeItem('remember_email');
+      }
+
+      const destination =
+        location.state?.from?.pathname ||
+        (loggedInUser.venueManager ? '/venue-manager' : '/customer');
+
+      navigate(destination, { replace: true });
+      toast.success(`Welcome back, ${loggedInUser.name}!`);
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -63,24 +71,26 @@ const Login = () => {
     }
   };
 
-  const isFormFilled = form.email.trim() !== "" && form.password.trim() !== "";
+  const isFormFilled = form.email.trim() !== '' && form.password.trim() !== '';
 
   return (
     <div className="max-w-md mx-auto p-8 mt-10 bg-white shadow-xl rounded-2xl font-[Poppins]">
-      <h2 className="text-4xl font-semibold text-center mb-6">Log in to your account</h2>
+      <h2 className="text-4xl font-semibold text-center mb-6">
+        Log in to your account
+      </h2>
 
       <div className="flex justify-center mb-6 bg-gray-100 p-1 rounded-xl">
         <button
           type="button"
-          className={`w-1/2 py-2 rounded-xl transition-all duration-200 cursor-pointer ${accountType === "customer" ? "bg-green-200 font-semibold" : "hover:bg-gray-200"}`}
-          onClick={() => setAccountType("customer")}
+          className={`w-1/2 py-2 rounded-xl transition-all duration-200 cursor-pointer ${accountType === 'customer' ? 'bg-green-200 font-semibold' : 'hover:bg-gray-200'}`}
+          onClick={() => setAccountType('customer')}
         >
           Customer
         </button>
         <button
           type="button"
-          className={`w-1/2 py-2 rounded-xl transition-all duration-200 cursor-pointer ${accountType === "manager" ? "bg-green-200 font-semibold" : "hover:bg-gray-200"}`}
-          onClick={() => setAccountType("manager")}
+          className={`w-1/2 py-2 rounded-xl transition-all duration-200 cursor-pointer ${accountType === 'manager' ? 'bg-green-200 font-semibold' : 'hover:bg-gray-200'}`}
+          onClick={() => setAccountType('manager')}
         >
           Venue Manager
         </button>
@@ -110,7 +120,9 @@ const Login = () => {
             checked={remember}
             onChange={() => setRemember(!remember)}
           />
-          <label htmlFor="remember" className="text-sm">Remember me</label>
+          <label htmlFor="remember" className="text-sm">
+            Remember me
+          </label>
         </div>
 
         <button

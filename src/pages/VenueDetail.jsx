@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import 'react-calendar/dist/Calendar.css';
 import { addDays, isSameDay } from 'date-fns';
+import BackButton from '../components/BackButton';
 
 const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
 const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
@@ -128,16 +129,24 @@ export default function VenueDetail() {
     }
   });
 
+  const renderStars = (rating = 0) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+  
+    return (
+      <span className="text-yellow-500 text-sm ml-2">
+        {'★'.repeat(fullStars)}
+        {halfStar && '½'}
+        {'☆'.repeat(emptyStars)}
+        <span className="ml-1 text-gray-600">({rating.toFixed(1)})</span>
+      </span>
+    );
+  };
+  
   return (
     <main className="font-[Poppins] max-w-4xl mx-auto p-4">
-      <button
-        onClick={() => navigate(-1)}
-        className="inline-flex items-center button-color text-white gap-2 px-4 py-2 rounded-2xl sm:w-auto transition-transform duration-150 hover:scale-[1.02] mb-6 cursor-pointer"
-      >
-        <span className="text-lg"></span> Back
-      </button>
-
-      <div className="border rounded-xl shadow container mx-auto px-4 py-8 font-[Poppins]">
+      <div className="border-2 border-[#C07059] rounded-2xl shadow container mx-auto px-4 py-8 font-[Poppins]">
         <div className="flex items-center gap-2 mb-4">
           <h1 className="text-3xl font-bold truncate">{venue.name}</h1>
           {isPopular && (
@@ -197,7 +206,9 @@ export default function VenueDetail() {
 
         <p className="mb-2 text-gray-700">{venue.description}</p>
         <p className="mb-2 text-sm text-gray-500">{location}</p>
-        <p className="mb-4 text-lg font-semibold">${venue.price} / night</p>
+        <p className="mb-4 text-lg font-semibold">${venue.price} / night
+        {venue.rating !== undefined && renderStars(venue.rating)}
+        </p>
 
         {venue.location?.lat && venue.location?.lng && (
           <iframe
@@ -266,7 +277,7 @@ export default function VenueDetail() {
         >
           <div className="relative w-64">
             <Calendar
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400"
               size={18}
             />
             <DatePicker
@@ -275,7 +286,7 @@ export default function VenueDetail() {
               endDate={endDate}
               onChange={(update) => setDateRange(update)}
               placeholderText="Check in - Check out"
-              className="pl-10 border rounded-2xl px-4 py-2 w-full"
+              className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full"
               excludeDates={excludedDates}
               dayClassName={(date) => {
                 return excludedDates.some(
@@ -288,7 +299,7 @@ export default function VenueDetail() {
           </div>
           <div className="relative w-32">
             <Users
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400"
               size={18}
             />
             <input
@@ -296,7 +307,7 @@ export default function VenueDetail() {
               min={1}
               value={guests}
               onChange={(e) => setGuests(+e.target.value)}
-              className="pl-10 border rounded-2xl px-4 py-2 w-full"
+              className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full"
               placeholder="Guests"
             />
           </div>
@@ -308,6 +319,7 @@ export default function VenueDetail() {
           </button>
         </form>
       </div>
+      <BackButton />
     </main>
   );
 }

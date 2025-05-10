@@ -5,6 +5,7 @@ import { format, differenceInCalendarDays } from 'date-fns';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import SafeImage from '../components/SafeImage';
+import BackButton from '../components/BackButton';
 
 const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
 const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
@@ -19,6 +20,21 @@ const BookingDetail = () => {
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     'X-Noroff-API-Key': API_KEY,
+  };
+
+  const renderStars = (rating = 0) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <span className="text-yellow-500 text-sm ml-2">
+        {'★'.repeat(fullStars)}
+        {halfStar && '½'}
+        {'☆'.repeat(emptyStars)}
+        <span className="ml-1 text-gray-500">({rating.toFixed(1)})</span>
+      </span>
+    );
   };
 
   useEffect(() => {
@@ -70,14 +86,7 @@ const BookingDetail = () => {
 
   return (
     <main className="font-[Poppins] max-w-4xl mx-auto p-4">
-      <button
-        onClick={() => navigate(-1)}
-        className="inline-flex items-center button-color text-white gap-2 px-4 py-2 rounded-lg sm:w-auto transition-transform duration-150 hover:scale-[1.02] mb-6 cursor-pointer"
-      >
-        <span className="text-lg"></span> Back
-      </button>
-
-      <div className="border rounded-xl shadow p-6 space-y-6">
+      <div className="border-2 border-[#C07059] rounded-xl shadow p-6 space-y-6">
         <SafeImage
           src={venue?.media?.[0]?.url || 'https://placehold.co/600x300'}
           alt={venue?.name || 'Venue image'}
@@ -85,7 +94,10 @@ const BookingDetail = () => {
         />
 
         <div className="space-y-2">
-          <h1 className="text-5xl font-bold">{venue?.name}</h1>
+          <h1 className="text-5xl font-bold flex items-center">
+            {venue?.name}
+            {venue?.rating !== undefined && renderStars(venue.rating)}
+          </h1>
           <p className="text-gray-600">
             {venue?.location?.address} {venue?.location?.city},{' '}
             {venue?.location?.country}
@@ -110,7 +122,9 @@ const BookingDetail = () => {
             </p>
           </div>
           <div className="border-t pt-6 mt-6">
-            <h2 className="text-4xl font-semibold mb-3">Customer Information</h2>
+            <h2 className="text-4xl font-semibold mb-3">
+              Customer Information
+            </h2>
 
             <div className="flex items-center gap-4">
               <SafeImage
@@ -135,6 +149,7 @@ const BookingDetail = () => {
           </button>
         </div>
       </div>
+      <BackButton />
     </main>
   );
 };

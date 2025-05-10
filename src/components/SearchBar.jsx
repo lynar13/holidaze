@@ -34,7 +34,7 @@ export default function SearchBar({ onFilterChange }) {
     <form
       onSubmit={handleSubmit}
       ref={barRef}
-      className="top-20 z-40 bg-white flex flex-wrap justify-center items-center gap-4 px-6 py-5 rounded-3xl shadow-xl mx-w-7xl mx-auto mb-10 transition-all duration-700 ease-out transform opacity-0 -translate-y-3"
+      className="top-20 z-[50] bg-white flex flex-wrap justify-center items-center gap-4 px-6 py-5 rounded-3xl shadow-xl mx-w-7xl mx-auto mb-10 transition-all duration-700 ease-out transform opacity-0 -translate-y-3"
     >
       <div className="relative w-[220px]">
         <label htmlFor="search" className="sr-only">
@@ -51,7 +51,7 @@ export default function SearchBar({ onFilterChange }) {
           placeholder="Where to?"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10 border border-rose-600 rounded-2xl px-4 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C07059]"
           autoComplete="off"
         />
       </div>
@@ -72,7 +72,7 @@ export default function SearchBar({ onFilterChange }) {
           endDate={endDate}
           onChange={(update) => setDateRange(update)}
           placeholderText="Check in - Check out"
-          className="pl-10 border border-rose-600 rounded-2xl px-4 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C07059]"
           aria-label="Date range"
         />
       </div>
@@ -93,7 +93,7 @@ export default function SearchBar({ onFilterChange }) {
           value={guests}
           onChange={(e) => setGuests(+e.target.value)}
           placeholder="Guests"
-          className="pl-10 border border-rose-600 rounded-2xl px-4 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C07059]"
           autoComplete="off"
         />
       </div>
@@ -108,12 +108,13 @@ export default function SearchBar({ onFilterChange }) {
           value={sort}
           onChange={(e) => setSort(e.target.value)}
           aria-label="Sort by"
-          className="appearance-none pl-4 pr-10 border border-rose-600 rounded-2xl py-2 w-full text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="appearance-none pl-4 pr-10 border-2 border-[#C07059] rounded-2xl py-2 w-full text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#C07059]"
         >
           <option value="">Sort by</option>
           <option value="priceAsc">Price: Low to High ↑</option>
           <option value="priceDesc">Price: High to Low ↓</option>
           <option value="available">Available Only ✅</option>
+          <option value="ratingDesc">Rating: High to Low</option>
         </select>
 
         {/* Dropdown arrow */}
