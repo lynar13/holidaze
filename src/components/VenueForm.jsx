@@ -28,9 +28,9 @@ export default function VenueForm({
     <form onSubmit={onSubmit} className="space-y-8 w-full">
       {/* Venue Details */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">
           Venue Details
-        </h2>
+        </h3>
         <div className="grid sm:grid-cols-2 gap-6">
           <input
             name="name"
@@ -63,9 +63,9 @@ export default function VenueForm({
 
       {/* Description */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">
           Description
-        </h2>
+        </h3>
         <textarea
           name="description"
           placeholder="Write a short description..."
@@ -79,7 +79,7 @@ export default function VenueForm({
 
       {/* Location */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Location</h2>
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">Location</h3>
         <div className="grid sm:grid-cols-3 gap-4">
           <input
             name="address"
@@ -107,7 +107,7 @@ export default function VenueForm({
 
       {/* Image URLs */}
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Image URLs</h2>
+        <h3 className="text-xl font-semibold mb-4 text-gray-800">Image URLs</h3>
         {mediaUrls.map((url, index) => (
           <div key={index} className="mb-4">
             <input

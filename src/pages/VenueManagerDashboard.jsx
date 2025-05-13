@@ -129,6 +129,21 @@ const VenueManagerDashboard = () => {
     return <div className="text-center p-6 font-[Poppins]">Unauthorized</div>;
   }
 
+  const renderStars = (rating = 0) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+      <span className="text-yellow-500 text-sm flex items-center justify-center mt-1">
+        {'★'.repeat(fullStars)}
+        {halfStar && '½'}
+        {'☆'.repeat(emptyStars)}
+        <span className="ml-1 text-gray-600">({rating.toFixed(1)})</span>
+      </span>
+    );
+  };
+
   return (
     <main className="p-4 font-[Poppins] max-w-6xl mx-auto">
       {/* Banner */}
@@ -140,7 +155,7 @@ const VenueManagerDashboard = () => {
             className="w-full h-40 object-cover rounded-xl"
           />
           {/* Avatar + User Info Row */}
-          <div className="absolute left-4 bottom-[-5rem] sm:left-8 flex items-center gap-4 p-2">
+          <div className="absolute left-4 bottom-[-6rem] sm:left-8 flex items-center gap-4 p-2">
             <img
               src={
                 user.avatar?.url ||
@@ -153,6 +168,12 @@ const VenueManagerDashboard = () => {
             <div>
               <p className="text-lg font-semibold">{user.name}</p>
               <p className="text-gray-600 text-xs break-words">{user?.email}</p>
+              <button
+                onClick={() => setShowEditor(true)}
+                className="mt-2 button-color text-white px-5 py-1.5 rounded-xl text-sm cursor-pointer"
+              >
+                Edit Profile
+              </button>
             </div>
           </div>
         </div>
@@ -208,7 +229,7 @@ const VenueManagerDashboard = () => {
       <section className="mb-12 py-6 px-2">
         <div className="mt-4 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 px-2 sm:px-4">
           <h1 className="text-5xl font-bold">
-            Your Managed Venues ({user._count?.venues || managedVenues.length})
+            Managed Venues ({user._count?.venues || managedVenues.length})
           </h1>
           <div className="flex flex-wrap gap-2">
             <button
@@ -233,7 +254,7 @@ const VenueManagerDashboard = () => {
             No managed venues found.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:px-4 p-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6 sm:px-4 p-2">
             {managedVenues.map((venue) => {
               const totalBookings = venue.bookings?.length || 0;
               const isAvailable = totalBookings < (venue.maxGuests || 1);
@@ -258,16 +279,20 @@ const VenueManagerDashboard = () => {
                   <h3 className="text-lg font-semibold truncate">
                     {venue.name}
                   </h3>
-                  <AvailabilityTag isAvailable={isAvailable} />
                   <p className="text-sm text-gray-600 mt-1">
                     {venue.description || 'No description'}
                   </p>
                   <p className="text-sm text-gray-500 font-semibold mt-1">
-                    Price: ${venue.price} • Max Guests: {venue.maxGuests}
+                    Price: ${venue.price} / night • Max Guests: {venue.maxGuests}
                   </p>
+                  
+                  {/* ⭐ Add this line to show rating */}
+                  {venue.rating !== undefined && renderStars(venue.rating)}
+
                   <p className="text-sm text-gray-500">
                     Total bookings: {totalBookings}
                   </p>
+                  <AvailabilityTag isAvailable={isAvailable} />
                   <div className="flex gap-2 mt-3">
                     <button
                       onClick={(e) => {

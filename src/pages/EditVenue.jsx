@@ -69,7 +69,7 @@ export default function EditVenue() {
   if (loading || !form) return <p className="p-4">Loading venue...</p>;
 
   return (
-    <main className="max-w-6xl mx-auto p-6 sm:p-10 bg-white shadow-xl rounded-3xl mt-10 font-[Poppins]">
+    <main className="max-w-6xl mx-auto p-6 sm:p-10 bg-red-50 shadow-xl rounded-3xl mt-10 font-[Poppins]">
       <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">
         Edit Venue
       </h1>

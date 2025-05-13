@@ -158,7 +158,7 @@ export default function VenueDetail() {
 
         {venue.media?.length > 0 && (
           <div
-            className="relative w-full h-64 mb-6 overflow-hidden rounded"
+            className="relative w-full h-64 mb-6 overflow-hidden rounded-2xl"
             onMouseEnter={pauseSlideshow}
             onMouseLeave={resumeSlideshow}
           >
@@ -273,9 +273,9 @@ export default function VenueDetail() {
 
         <form
           onSubmit={bookVenue}
-          className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-4 bg-white p-4 rounded-2xl shadow-lg mb-6"
+          className="flex flex-col sm:flex-row flex-wrap justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-lg mb-6"
         >
-          <div className="relative w-64">
+          <div className="relative w-45">
             <Calendar
               className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400"
               size={18}
@@ -285,7 +285,7 @@ export default function VenueDetail() {
               startDate={startDate}
               endDate={endDate}
               onChange={(update) => setDateRange(update)}
-              placeholderText="Check in - Check out"
+              placeholderText="Check in - out"
               className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full"
               excludeDates={excludedDates}
               dayClassName={(date) => {
@@ -297,7 +297,7 @@ export default function VenueDetail() {
               }}
             />
           </div>
-          <div className="relative w-32">
+          <div className="relative w-45">
             <Users
               className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400"
               size={18}

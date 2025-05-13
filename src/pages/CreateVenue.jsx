@@ -82,8 +82,8 @@ export default function CreateVenue() {
   };
 
   return (
-    <main className="max-w-6xl mx-auto p-6 sm:p-10 bg-white shadow-xl rounded-3xl mt-10 font-[Poppins]">
-      <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">
+    <main className="max-w-6xl mx-auto p-6 sm:p-10 bg-red-50 shadow-xl rounded-3xl mt-10 font-[Poppins]">
+      <h1 className="text-5xl font-bold text-center text-gray-800 mb-10">
         Create a New Venue
       </h1>
       <div className="grid md:grid-cols-2 gap-10 items-start">
