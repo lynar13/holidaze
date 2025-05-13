@@ -5,6 +5,7 @@ import axios from 'axios';
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
+import BackButton from '../components/BackButton';
 
 const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
 const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
@@ -30,27 +31,6 @@ export default function VenueManagerVenueDetail() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 font-[Poppins]">
-      <button
-        onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white button-color hover:bg-black hover:scale-105 transition duration-200 ease-in-out mb-6"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-5 h-5"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        <span>Back</span>
-      </button>
-
       <h1 className="text-2xl font-bold mb-4">{venue.name}</h1>
       <img
         src={venue.media?.[0]?.url}
@@ -74,6 +54,7 @@ export default function VenueManagerVenueDetail() {
           </li>
         ))}
       </ul>
+      <BackButton />
     </div>
   );
 }

@@ -37,9 +37,10 @@ export default function VenueDetail() {
 
   useEffect(() => {
     async function fetchVenue() {
-      const data = await getVenues();
-      const found = data.find((v) => v.id === id);
-      setVenue(found);
+      const res = await axios.get(`${BASE_URL}/venues/${id}?_bookings=true`, {
+        headers,
+      });
+      setVenue(res.data.data);
     }
     fetchVenue();
   }, [id]);
@@ -124,7 +125,8 @@ export default function VenueDetail() {
     const end = new Date(booking.dateTo);
 
     while (current <= end) {
-      excludedDates.push(new Date(current));
+      const normalized = new Date(current.setHours(0, 0, 0, 0));
+      excludedDates.push(new Date(normalized));
       current = addDays(current, 1);
     }
   });
@@ -133,7 +135,7 @@ export default function VenueDetail() {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 >= 0.5;
     const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-  
+
     return (
       <span className="text-yellow-500 text-sm ml-2">
         {'★'.repeat(fullStars)}
@@ -143,7 +145,7 @@ export default function VenueDetail() {
       </span>
     );
   };
-  
+
   return (
     <main className="font-[Poppins] max-w-4xl mx-auto p-4">
       <div className="border-2 border-[#C07059] rounded-2xl shadow container mx-auto px-4 py-8 font-[Poppins]">
@@ -206,8 +208,9 @@ export default function VenueDetail() {
 
         <p className="mb-2 text-gray-700">{venue.description}</p>
         <p className="mb-2 text-sm text-gray-500">{location}</p>
-        <p className="mb-4 text-lg font-semibold">${venue.price} / night
-        {venue.rating !== undefined && renderStars(venue.rating)}
+        <p className="mb-4 text-lg font-semibold">
+          ${venue.price} / night
+          {venue.rating !== undefined && renderStars(venue.rating)}
         </p>
 
         {venue.location?.lat && venue.location?.lng && (
@@ -244,7 +247,7 @@ export default function VenueDetail() {
               <span>Booked</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-200 border rounded-sm" />
+              <div className="w-4 h-4 bg-blue-200 border rounded-sm" />
               <span>Available</span>
             </div>
           </div>

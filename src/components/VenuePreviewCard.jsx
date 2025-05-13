@@ -17,7 +17,7 @@ export default function VenuePreviewCard({ venue }) {
   };
 
   return (
-    <div className="w-full sm:w-80 border rounded-2xl shadow-md p-4 bg-white h-fit">
+    <div className="w-full sm:w-80 border rounded-2xl shadow-md p-4 bg-white h-fit flex flex-col justify-center items-center">
       {image && (
         <img
           src={image}

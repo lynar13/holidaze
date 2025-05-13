@@ -99,7 +99,7 @@ function VenueCard({ venue, index, filters }) {
             {available && (
               <Link
                 to={`/venues/${venue.id}`}
-                className="button-color text-white text-center px-5 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02]"
+                className="button-color font-semibold text-white text-center px-5 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02]"
               >
                 Book Now
               </Link>

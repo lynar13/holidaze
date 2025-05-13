@@ -138,7 +138,7 @@ export default function SearchBar({ onFilterChange }) {
 
       <button
         type="submit"
-        className="button-color text-white px-6 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
+        className="button-color font-semibold text-white px-6 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
       >
         Search
       </button>

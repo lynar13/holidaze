@@ -143,7 +143,7 @@ const BookingDetail = () => {
 
           <button
             onClick={handleCancelBooking}
-            className="mt-6 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-2xl text-sm"
+            className="mt-6 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-2xl text-sm"
           >
             Cancel Booking
           </button>

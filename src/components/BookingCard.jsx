@@ -75,7 +75,7 @@ export default function BookingCard({ booking, onCancel }) {
               e.stopPropagation();
               onCancel(booking.id);
             }}
-            className="bg-red-600 text-white text-sm text-center px-5 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02]"
+            className="bg-red-600 text-white font-semibold text-sm text-center px-5 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02]"
               >
             Cancel Booking
           </button>

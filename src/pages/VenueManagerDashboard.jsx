@@ -170,7 +170,7 @@ const VenueManagerDashboard = () => {
               <p className="text-gray-600 text-xs break-words">{user?.email}</p>
               <button
                 onClick={() => setShowEditor(true)}
-                className="mt-2 button-color text-white px-5 py-1.5 rounded-xl text-sm cursor-pointer"
+                className="mt-2 button-color font-semibold text-white px-5 py-1.5 rounded-xl text-sm cursor-pointer"
               >
                 Edit Profile
               </button>
@@ -231,7 +231,7 @@ const VenueManagerDashboard = () => {
           <h1 className="text-5xl font-bold">
             Managed Venues ({user._count?.venues || managedVenues.length})
           </h1>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 font-semibold">
             <button
               onClick={() => navigate('/create-venue')}
               className="button-color text-white px-4 py-1 rounded-xl flex items-center gap-2 cursor-pointer"
@@ -363,7 +363,7 @@ const VenueManagerDashboard = () => {
             )}
             <button
               onClick={handleAvatarUpdate}
-              className="button-color text-white px-6 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
+              className="button-color font-semibold text-white px-6 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
             >
               Save Changes
             </button>

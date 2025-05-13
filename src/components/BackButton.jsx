@@ -5,10 +5,10 @@ export default function BackButton({ className = '' }) {
   const navigate = useNavigate();
 
   return (
-    <div className={`flex justify-center mt-8 ${className}`}>
+    <div className={`flex font-semibold justify-center mt-8 ${className}`}>
       <button
         onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 px-6 py-2 rounded-2xl text-white button-color transition hover:scale-105"
+        className="inline-flex items-center gap-2 px-6 py-2 rounded-2xl text-black transition hover:scale-105"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
