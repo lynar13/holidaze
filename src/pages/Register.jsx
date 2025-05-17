@@ -158,7 +158,7 @@ const Register = () => {
         <button
           type="submit"
           disabled={!isFormValid || loading}
-          className="w-full flex justify-center items-center gap-2 text-white py-2 rounded-xl transition button-color disabled:opacity-60 cursor-pointer"
+          className="w-full font-semibold flex justify-center items-center gap-2 text-white py-2 rounded-xl transition button-color disabled:opacity-60 cursor-pointer"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />} Create Account
         </button>
