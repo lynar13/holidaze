@@ -1,0 +1,19 @@
+<!-- 404.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting...</title>
+    <script>
+      // redirect to SPA route
+      const redirect = sessionStorage.redirect;
+      if (redirect) {
+        sessionStorage.removeItem("redirect");
+        location.replace(location.origin + "/holidaze" + redirect);
+      } else {
+        location.replace("/holidaze/");
+      }
+    </script>
+  </head>
+  <body></body>
+</html>
