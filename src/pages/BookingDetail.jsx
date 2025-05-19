@@ -96,13 +96,12 @@ const BookingDetail = () => {
         <div className="space-y-2">
           <h1 className="text-5xl font-bold flex items-center">
             {venue?.name}
-            {venue?.rating !== undefined && renderStars(venue.rating)}
           </h1>
           <p className="text-gray-600">
             {venue?.location?.address} {venue?.location?.city},{' '}
             {venue?.location?.country}
           </p>
-
+          {venue.rating !== undefined && renderStars(venue.rating)}
           <div className="text-gray-700 space-y-1 mt-4">
             <p>
               <strong>Guests:</strong> {booking.guests}

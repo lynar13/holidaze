@@ -12,16 +12,10 @@
     <script type="module" src="/src/main.jsx"></script>
 
     <script>
-      if (location.pathname !== '/' && !location.pathname.includes('.')) {
-        location.replace('/holidaze/?redirect=' + location.pathname);
-      }
-    </script>
-  
-    <script>
-      const redirect = sessionStorage.redirect;
-      if (redirect) {
-        delete sessionStorage.redirect;
-        window.history.replaceState(null, '', redirect);
+      if (sessionStorage.redirect) {
+        const redirect = sessionStorage.redirect;
+        sessionStorage.removeItem('redirect');
+        history.replaceState(null, '', redirect);
       }
     </script>
   </body>
