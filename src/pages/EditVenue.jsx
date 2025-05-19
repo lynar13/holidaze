@@ -2,68 +2,84 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import VenueForm from '../components/VenueForm';
 import VenuePreviewCard from '../components/VenuePreviewCard';
 import BackButton from '../components/BackButton';
+import { getAuthHeaders, updateVenue } from '../utils/api';
 
 const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
-const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
 
 export default function EditVenue() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [form, setForm] = useState(null);
   const [mediaUrls, setMediaUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-
-  const headers = {
-    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-    'X-Noroff-API-Key': API_KEY,
-  };
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    axios
-      .get(`${BASE_URL}/venues/${id}`, { headers })
-      .then((res) => {
-        const venue = res.data.data;
+    fetch(`${BASE_URL}/venues/${id}`, {
+      headers: getAuthHeaders(),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const venue = data.data;
         setForm({
           ...venue,
           mediaUrls: venue.media?.map((m) => m.url) || [''],
         });
         setMediaUrls(venue.media?.map((m) => m.url) || ['']);
-        setLoading(false);
       })
-      .catch((err) => {
-        toast.error('Failed to load venue.');
-        console.error(err);
-      });
+      .catch(() => toast.error('Failed to load venue.'))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setErrors({});
+
     try {
+      const {
+        name,
+        description,
+        price,
+        maxGuests,
+        meta,
+        location,
+      } = form;
+      
       const updatedData = {
-        ...form,
+        name,
+        description,
+        price: Number(price),
+        maxGuests: Number(maxGuests),
+        meta,
+        location,
         media: mediaUrls
-          .filter((url) => url.trim() !== '')
+          .filter((url) => url.trim())
           .map((url, i) => ({
             url: url.trim(),
-            alt: `Image ${i + 1} of ${form.name}`,
+            alt: `Image ${i + 1} of ${name}`,
           })),
-      };
+      };      
 
-      await axios.put(`${BASE_URL}/venues/${id}`, updatedData, { headers });
+      await updateVenue(id, updatedData);
       toast.success('Venue updated!');
       navigate('/venue-manager');
     } catch (err) {
-      toast.error('Failed to update venue.');
+      const apiErrors = err.details?.errors;
+      if (apiErrors?.length) {
+        const messages = apiErrors.map((e) => `${e.path}: ${e.message}`);
+        messages.forEach((msg) => toast.error(msg));
+        setErrors(Object.fromEntries(apiErrors.map((e) => [e.path, e.message])));
+      } else {
+        toast.error('Failed to update venue.');
+      }
       console.error(err);
-    } finally {
-      setSubmitting(false);
-    }
+    }    
   };
 
   if (loading || !form) return <p className="p-4">Loading venue...</p>;
@@ -82,8 +98,9 @@ export default function EditVenue() {
           onSubmit={handleSubmit}
           loading={submitting}
           submitLabel="Update Venue"
+          errors={errors}
         />
-        <VenuePreviewCard venue={{ ...form, mediaUrls }} />
+        <VenuePreviewCard venue={{ ...form, media: mediaUrls.map((url) => ({ url })) }} />
       </div>
       <BackButton />
     </main>

@@ -7,11 +7,6 @@
 
 
 
-/* @tailwind base; */
-/* @tailwind components; */
-/* @tailwind utilities;  */
-
-
 @layer utilities {
   .react-datepicker__day--booked {
     background-color: #ee3a3a; 

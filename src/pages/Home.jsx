@@ -86,7 +86,7 @@ export default function Home() {
                   className="absolute inset-0 w-full h-full object-cover brightness-75"
                 />
                 <div className="relative z-10 px-6 text-center flex flex-col justify-center items-center h-full text-white">
-                  <h2 className="text-3xl sm:text-4xl font-bold mb-2 drop-shadow-lg">
+                  <h2 className="text-3xl sm:text-3xl truncate font-bold mb-2 drop-shadow-lg">
                     {venue.name}
                   </h2>
                   <p className="text-sm sm:text-base drop-shadow-md mb-3">

@@ -1,16 +1,23 @@
 // src/pages/VenueManagerDashboard.jsx
-import VenueCard from '../components/VenueCard';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-import AvailabilityTag from '../components/AvailabilityTag';
 import { Pencil, Trash2, Plus, UserCog } from 'lucide-react';
-import SearchBar from '../components/SearchBar';
+import {
+  deleteVenue,
+  getVenues,
+  getAuthHeaders,
+  updateUserProfile,
+  getManagedVenues,
+  filterVenuesBySearch,
+} from '../utils/api';
+import { renderStars } from '../utils/renderStars';
 
-const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
-const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
+import SearchBar from '../components/SearchBar';
+import VenueCard from '../components/VenueCard';
+import AvailabilityTag from '../components/AvailabilityTag';
+import UserProfileEditor from '../components/UserProfileEditor';
 
 const VenueManagerDashboard = () => {
   const { user, setUser } = useAuth();
@@ -20,37 +27,26 @@ const VenueManagerDashboard = () => {
   const [searchResultsPage, setSearchResultsPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar?.url || '');
-  const [bannerUrl, setBannerUrl] = useState(user?.banner?.url || '');
-
-  const accessToken = localStorage.getItem('accessToken');
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    'X-Noroff-API-Key': API_KEY,
-  };
-
-  const fetchManagedVenues = async () => {
-    try {
-      const res = await axios.get(
-        `${BASE_URL}/profiles/${user.name}/venues?_bookings=true`,
-        { headers }
-      );
-      setManagedVenues(res.data.data || []);
-    } catch (err) {
-      toast.error('Error fetching venues');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [form, setForm] = useState({
+    avatarUrl: user?.avatar?.url || '',
+    bannerUrl: user?.banner?.url || '',
+  });
+  
+  const headers = getAuthHeaders();
 
   useEffect(() => {
-    if (user?.venueManager && user.name) fetchManagedVenues();
+    if (user?.venueManager && user.name) {
+      getManagedVenues(user.name)
+        .then(setManagedVenues)
+        .catch(() => toast.error('Error fetching venues'))
+        .finally(() => setLoading(false));
+    }
   }, [user]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this venue?')) return;
     try {
-      await axios.delete(`${BASE_URL}/venues/${id}`, { headers });
+      await deleteVenue(id);
       setManagedVenues((prev) => prev.filter((v) => v.id !== id));
       toast.success('Venue deleted');
     } catch (err) {
@@ -72,10 +68,7 @@ const VenueManagerDashboard = () => {
         },
       };
 
-      await axios.put(`${BASE_URL}/profiles/${user.name}`, updated, {
-        headers,
-      });
-
+      await updateUserProfile(user.name, updated);
       setUser((prev) => ({
         ...prev,
         avatar: updated.avatar,
@@ -91,30 +84,14 @@ const VenueManagerDashboard = () => {
 
   const handleSearch = async (filters) => {
     try {
-      const res = await axios.get(`${BASE_URL}/venues`, { headers });
-      const data = res.data.data;
-
-      const searchTerm = (filters.search || '').toLowerCase();
-      const matches = data.filter((v) => {
-        const name = v.name?.toLowerCase() || '';
-        const city = v.location?.city?.toLowerCase() || '';
-        const country = v.location?.country?.toLowerCase() || '';
-        const address = v.location?.address?.toLowerCase() || '';
-        return (
-          name.includes(searchTerm) ||
-          city.includes(searchTerm) ||
-          country.includes(searchTerm) ||
-          address.includes(searchTerm)
-        );
-      });
-
-      if (matches.length === 1) {
-        navigate(`/venues/${matches[0].id}`);
-      } else {
+      const venues = await getVenues();
+      const matches = filterVenuesBySearch(venues, filters.search);
+      if (matches.length === 1) navigate(`/venues/${matches[0].id}`);
+      else {
         setSearchResults(matches);
         setSearchResultsPage(1);
       }
-    } catch (err) {
+    } catch {
       toast.error('Search failed');
     }
   };
@@ -128,21 +105,6 @@ const VenueManagerDashboard = () => {
   if (!user?.venueManager) {
     return <div className="text-center p-6 font-[Poppins]">Unauthorized</div>;
   }
-
-  const renderStars = (rating = 0) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-    return (
-      <span className="text-yellow-500 text-sm flex items-center justify-center mt-1">
-        {'★'.repeat(fullStars)}
-        {halfStar && '½'}
-        {'☆'.repeat(emptyStars)}
-        <span className="ml-1 text-gray-600">({rating.toFixed(1)})</span>
-      </span>
-    );
-  };
 
   return (
     <main className="p-4 font-[Poppins] max-w-6xl mx-auto">
@@ -283,9 +245,10 @@ const VenueManagerDashboard = () => {
                     {venue.description || 'No description'}
                   </p>
                   <p className="text-sm text-gray-500 font-semibold mt-1">
-                    Price: ${venue.price} / night • Max Guests: {venue.maxGuests}
+                    Price: ${venue.price} / night • Max Guests:{' '}
+                    {venue.maxGuests}
                   </p>
-                  
+
                   {/* ⭐ Add this line to show rating */}
                   {venue.rating !== undefined && renderStars(venue.rating)}
 
@@ -301,6 +264,7 @@ const VenueManagerDashboard = () => {
                       }}
                       className="p-2 rounded hover:bg-gray-100 text-blue-500"
                       title="Edit"
+                      aria-label="Edit venue"
                     >
                       <Pencil className="w-5 h-5" />
                     </button>
@@ -311,6 +275,7 @@ const VenueManagerDashboard = () => {
                       }}
                       className="p-2 rounded hover:bg-gray-100 text-red-500"
                       title="Delete"
+                      aria-label="Delete venue"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>
@@ -324,51 +289,12 @@ const VenueManagerDashboard = () => {
 
       {/* Avatar Editor */}
       {showEditor && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-xl relative">
-            <button
-              onClick={() => setShowEditor(false)}
-              className="absolute top-2 right-4 text-2xl cursor-pointer"
-            >
-              &times;
-            </button>
-            <h3 className="text-lg font-semibold mb-2">Edit Profile</h3>
-            <label className="block text-sm font-medium">Avatar URL</label>
-            <input
-              type="url"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              className="w-full border px-3 py-2 rounded mb-4"
-            />
-            {avatarUrl && (
-              <img
-                src={avatarUrl}
-                alt="Preview"
-                className="w-16 h-16 mx-auto rounded-full mb-4 border"
-              />
-            )}
-            <label className="block text-sm font-medium">Banner URL</label>
-            <input
-              type="url"
-              value={bannerUrl}
-              onChange={(e) => setBannerUrl(e.target.value)}
-              className="w-full border px-3 py-2 rounded mb-4"
-            />
-            {bannerUrl && (
-              <img
-                src={bannerUrl}
-                alt="Preview"
-                className="w-full h-24 object-cover rounded mb-4"
-              />
-            )}
-            <button
-              onClick={handleAvatarUpdate}
-              className="button-color font-semibold text-white px-6 py-2 rounded-2xl w-full sm:w-auto transition-transform duration-150 hover:scale-[1.02] cursor-pointer"
-            >
-              Save Changes
-            </button>
-          </div>
-        </div>
+        <UserProfileEditor
+          form={form}
+          setForm={setForm}
+          onClose={() => setShowEditor(false)}
+          onSave={updateProfile}
+        />
       )}
     </main>
   );

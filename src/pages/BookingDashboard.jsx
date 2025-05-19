@@ -1,17 +1,23 @@
 // BookingDashboard.jsx
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import {
+  getAuthHeaders,
+  getVenues,
+  filterVenuesBySearch,
+  cancelBooking,
+  getUserBookings,
+  updateUserProfile,
+} from '../utils/api';
+import { renderStars } from '../utils/renderStars';
+
 import SearchBar from '../components/SearchBar';
 import SafeImage from '../components/SafeImage';
 import VenueCard from '../components/VenueCard';
 import BookingCard from '../components/BookingCard';
-
-const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
-const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
 
 const BookingDashboard = () => {
   const { user, setUser } = useAuth();
@@ -25,33 +31,13 @@ const BookingDashboard = () => {
     venueManager: user?.venueManager || false,
   });
 
-  const accessToken = localStorage.getItem('accessToken');
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    'X-Noroff-API-Key': API_KEY,
-  };
-
-  const renderStars = (rating = 0) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-    return (
-      <span className="text-yellow-500 text-sm ml-1">
-        {'★'.repeat(fullStars)}
-        {halfStar && '½'}
-        {'☆'.repeat(emptyStars)}
-        <span className="ml-1 text-gray-500">({rating.toFixed(1)})</span>
-      </span>
-    );
-  };
+  const headers = getAuthHeaders();
 
   useEffect(() => {
     if (user?.name) {
-      axios
-        .get(`${BASE_URL}/profiles/${user.name}?_bookings=true`, { headers })
-        .then((res) => setBookings(res.data?.data?.bookings || []))
-        .catch((err) => console.error('Error fetching bookings', err));
+      getUserBookings(user.name)
+        .then(setBookings)
+        .catch(() => toast.error('Error fetching bookings'));
     }
   }, [user]);
 
@@ -62,7 +48,7 @@ const BookingDashboard = () => {
         avatar: {
           url:
             form.avatarUrl.trim() ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name)}`,
+            `https://ui-avatars.com/api/?name=${user.name}`,
           alt: 'User avatar',
         },
         banner: {
@@ -71,51 +57,23 @@ const BookingDashboard = () => {
         },
         venueManager: form.venueManager,
       };
-
-      await axios.put(`${BASE_URL}/profiles/${user.name}`, body, { headers });
-
-      setUser((prev) => ({
-        ...prev,
-        avatar: body.avatar,
-        banner: body.banner,
-        venueManager: body.venueManager,
-        bio: body.bio,
-      }));
-
+      await updateUserProfile(user.name, body);
+      setUser((prev) => ({ ...prev, ...body }));
       toast.success('Profile updated!');
       setShowEditor(false);
-    } catch (err) {
-      console.error('Update error', err);
-      toast.error('Failed to update profile.');
+    } catch {
+      toast.error('Failed to update profile');
     }
   };
 
   const handleSearch = async (filters) => {
     try {
-      const res = await axios.get(`${BASE_URL}/venues`, { headers });
-      const data = res.data.data;
-
-      const searchTerm = (filters.search || '').toLowerCase();
-      const matches = data.filter((v) => {
-        const name = v.name?.toLowerCase() || '';
-        const city = v.location?.city?.toLowerCase() || '';
-        const country = v.location?.country?.toLowerCase() || '';
-        const address = v.location?.address?.toLowerCase() || '';
-        return (
-          name.includes(searchTerm) ||
-          city.includes(searchTerm) ||
-          country.includes(searchTerm) ||
-          address.includes(searchTerm)
-        );
-      });
-
-      if (matches.length === 1) {
-        navigate(`/venues/${matches[0].id}`);
-      } else {
-        setVenues(matches);
-      }
-    } catch (err) {
-      console.error('Search failed', err);
+      const venues = await getVenues();
+      const matches = filterVenuesBySearch(venues, filters.search);
+      if (matches.length === 1) navigate(`/venues/${matches[0].id}`);
+      else setVenues(matches);
+    } catch {
+      toast.error('Search failed');
     }
   };
 
@@ -267,6 +225,7 @@ const BookingDashboard = () => {
           <div className="grid md:grid-cols-2 gap-4 cursor-pointer">
             {bookings.map((booking) => {
               const venue = booking.venue;
+              
               const location = [
                 venue?.location?.address,
                 venue?.location?.city,
@@ -278,25 +237,21 @@ const BookingDashboard = () => {
               const formattedFrom = format(new Date(booking.dateFrom), 'MMM d');
               const formattedTo = format(new Date(booking.dateTo), 'MMM d');
 
-              const handleCancel = async (bookingId) => {
+              const handleCancel = async (id) => {
                 try {
-                  await axios.delete(`${BASE_URL}/bookings/${bookingId}`, {
-                    headers,
-                  });
+                  await cancelBooking(id);
+                  setBookings((prev) => prev.filter((b) => b.id !== id));
                   toast.success('Booking cancelled');
-                  setBookings((prev) => prev.filter((b) => b.id !== bookingId));
-                } catch (err) {
+                } catch {
                   toast.error('Failed to cancel booking');
                 }
               };
 
               return (
                 <div className="py-4">
-                  <BookingCard
-                    key={booking.id}
-                    booking={booking}
-                    onCancel={handleCancel}
-                  />
+                  <div key={booking.id} className="space-y-2">
+                    <BookingCard booking={booking} onCancel={handleCancel} />
+                  </div>
                 </div>
               );
             })}

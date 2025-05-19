@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { memo } from 'react';
 import AvailabilityTag from './AvailabilityTag';
+import { renderStars } from '../utils/renderStars';
 
 function VenueCard({ venue, index, filters }) {
   const image = venue.media?.[0]?.url;
@@ -17,21 +18,6 @@ function VenueCard({ venue, index, filters }) {
     (venue.meta?.bookings?.length || 0) < (venue.maxGuests || 1);
   const isNew =
     new Date(venue.created) > new Date(Date.now() - 1000 * 60 * 60 * 24 * 14); // last 14 days
-
-  const renderStars = (rating = 0) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-    return (
-      <span className="text-yellow-500 text-sm">
-        {'★'.repeat(fullStars)}
-        {halfStar && '½'}
-        {'☆'.repeat(emptyStars)}
-        <span className="ml-1 text-gray-600">({rating.toFixed(1)})</span>
-      </span>
-    );
-  };
 
   return (
     <main className="font-[Poppins]">

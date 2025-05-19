@@ -1,6 +1,8 @@
+// src/components/BookingCard.jsx
 import { format } from 'date-fns';
 import SafeImage from './SafeImage';
 import { useNavigate } from 'react-router-dom';
+import { renderStars } from '../utils/renderStars';
 
 export default function BookingCard({ booking, onCancel }) {
   const navigate = useNavigate();
@@ -17,20 +19,6 @@ export default function BookingCard({ booking, onCancel }) {
   const formattedFrom = format(new Date(booking.dateFrom), 'MMM d');
   const formattedTo = format(new Date(booking.dateTo), 'MMM d');
 
-  const renderStars = (rating = 0) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-    return (
-      <span className="text-yellow-500 text-sm">
-        {'★'.repeat(fullStars)}
-        {halfStar && '½'}
-        {'☆'.repeat(emptyStars)}
-        <span className="ml-1 text-gray-500">({rating.toFixed(1)})</span>
-      </span>
-    );
-  };
 
   return (
     <div
