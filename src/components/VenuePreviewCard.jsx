@@ -1,6 +1,6 @@
 // src/components/VenuePreviewCard.jsx
 import { renderStars } from '../utils/renderStars';
-export default function VenuePreviewCard({ venue }) {
+function VenuePreviewCard({ venue }) {
   const image = venue.mediaUrls?.[0] || venue.media?.[0]?.url;
 
   return (
@@ -23,7 +23,6 @@ export default function VenuePreviewCard({ venue }) {
         💰 ${venue.price} / night
       </p>
       <p className="text-sm text-gray-600">👥 Max {venue.maxGuests} guests</p>
-      
       <p className="text-sm text-gray-500 italic mt-2">
         📍 {venue.location?.address}, {venue.location?.city},{' '}
         {venue.location?.country}
@@ -31,3 +30,4 @@ export default function VenuePreviewCard({ venue }) {
     </div>
   );
 }
+export default VenuePreviewCard;

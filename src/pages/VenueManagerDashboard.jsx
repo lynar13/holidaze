@@ -293,7 +293,7 @@ const VenueManagerDashboard = () => {
           form={form}
           setForm={setForm}
           onClose={() => setShowEditor(false)}
-          onSave={updateProfile}
+          onSave={handleAvatarUpdate}
         />
       )}
     </main>
