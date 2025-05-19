@@ -1,1 +1,0 @@
-import{j as r}from"./index-zMy5iA0J.js";function n(t=0){const e=Math.floor(t),s=t%1>=.5,a=5-e-(s?1:0);return r.jsxs("span",{className:"text-yellow-500 text-sm flex items-center justify-center mt-1",children:["★".repeat(e),s&&"½","☆".repeat(a),r.jsxs("span",{className:"ml-1 text-gray-600",children:["(",t.toFixed(1),")"]})]})}export{n as r};
