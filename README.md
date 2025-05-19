@@ -1,27 +1,49 @@
-# Holidaze Frontend
+# Holidaze App
 
 Modern responsive booking platform for venues built with React, Tailwind CSS, Vite and the Holidaze API.
 
 ## 🚀 Features
 
-- 🔐 Authentication (Login/Register)
-- ✅ Availability check and booking form
-- 🔍 Venue search with filters (location, date range, guests)
-- 🎨 Custom UI with TailwindCSS and Lucide icons
-- 🖼️ Image slideshows + fullscreen preview
-- 📍 Google Map embed per venue
+- 🔐 **Authentication** – Login & Register using JWT
+- 🏨 **Venue Listings** – Full catalog of venues from API
+- ✅ **Booking System** – Availability checking & date validation
+- 🔍 **Smart Search** – Filter by location, guest count, and date
+- 📅 **Date Picker** – Select check-in/out dates with `react-datepicker`
+- 🖼️ **Image Slideshow** – Fullscreen preview of venue media
+- 📍 **Map Integration** – Embed Google Maps location per venue
+- 🛠️ **Venue Manager Dashboard** – Manage owned venues (create/edit/delete)
+- 👤 **User Profiles** – Avatar and banner customization
+- 🎨 **Custom UI** – Fully responsive Tailwind UI with custom theme
 
-
+---
 
 ## 🧰 Tech Stack
 
-- React
-- Vite
-- Tailwind CSS (with custom theme)
-- React Router
-- React Datepicker
-- Lucide React Icons
-- @fontsource for Poppins font
+- [React](https://reactjs.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React Router](https://reactrouter.com/)
+- [React Datepicker](https://www.npmjs.com/package/react-datepicker)
+- [Lucide Icons](https://lucide.dev/)
+- [React Toastify](https://fkhadra.github.io/react-toastify/) – Notifications
+- [@fontsource/poppins](https://www.npmjs.com/package/@fontsource/poppins) – Typography
+
+---
+
+## 🛠️ Local Development Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/lynar13/holidaze.git
+cd holidaze
+```
+
+### 2. Configure Environment Variables
+Create a .env file at the root and add your API key:
+```bash
+VITE_NOROFF_API_KEY=your_api_key_here
+```
 
 ## 📦 Installation
 
@@ -35,7 +57,8 @@ npm run dev
 ```bash
 src/
 ├── components/       # UI components (SearchBar, Header, VenueCard)
-├── pages/            # Pages (Home, VenueDetail, Login, Register)
+├── context/          # AuthContext
+├── pages/             # Pages (Home, VenueDetail, Login, Register)
 ├── utils/            # API utils (getVenues etc.)
 ├── index.css         # Tailwind base + custom styles
 └── main.jsx          # React entry
@@ -59,7 +82,7 @@ extend: {
 
 ## 🌐 API Docs
 
-Powered by [Noroff Holidaze API](https://docs.noroff.dev/docs/v2/holidaze/venues#all-venues)
+Powered by [Noroff Holidaze API](https://docs.noroff.dev/docs/v2/holidaze/)
 
 ## ✨ Customization Ideas
 

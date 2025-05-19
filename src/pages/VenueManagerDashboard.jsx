@@ -59,28 +59,30 @@ const VenueManagerDashboard = () => {
       const updated = {
         avatar: {
           url:
-            avatarUrl.trim() || `https://ui-avatars.com/api/?name=${user.name}`,
+            form.avatarUrl.trim() || `https://ui-avatars.com/api/?name=${user.name}`,
           alt: 'User Avatar',
         },
         banner: {
-          url: bannerUrl.trim(),
+          url: form.bannerUrl.trim(),
           alt: 'User Banner',
         },
       };
-
+  
       await updateUserProfile(user.name, updated);
+  
       setUser((prev) => ({
         ...prev,
         avatar: updated.avatar,
         banner: updated.banner,
       }));
-
+  
       toast.success('Profile updated');
       setShowEditor(false);
     } catch (err) {
       toast.error('Failed to update profile');
+      console.error(err);
     }
-  };
+  };  
 
   const handleSearch = async (filters) => {
     try {
