@@ -4,12 +4,26 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/holidaze/travel.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Holidaze App">
+    <meta name="description" content="Holidaze App" />
     <title>Holidaze</title>
-    <script type="module" crossorigin src="/holidaze/assets/index-D4eH_S0J.js"></script>
+    <script type="module" crossorigin src="/holidaze/assets/index-zMy5iA0J.js"></script>
     <link rel="stylesheet" crossorigin href="/holidaze/assets/index-CM4m4y5x.css">
   </head>
   <body>
     <div id="root"></div>
+    
+    <script>
+      if (location.pathname !== '/' && !location.pathname.includes('.')) {
+        location.replace('/your-repo-name/?redirect=' + location.pathname);
+      }
+    </script>
+  
+    <script>
+      const redirect = sessionStorage.redirect;
+      if (redirect) {
+        delete sessionStorage.redirect;
+        window.history.replaceState(null, '', redirect);
+      }
+    </script>
   </body>
 </html>
