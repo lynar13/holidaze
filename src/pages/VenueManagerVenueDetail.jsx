@@ -6,6 +6,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../context/AuthContext';
 import BackButton from '../components/BackButton';
+import { renderStars } from '../utils/renderStars';
 
 const BASE_URL = 'https://v2.api.noroff.dev/holidaze';
 const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
@@ -37,7 +38,12 @@ export default function VenueManagerVenueDetail() {
         alt={venue.name}
         className="w-full h-64 object-cover rounded mb-4"
       />
-      <p className="mb-4 text-gray-700">{venue.description}</p>
+      <p className="mb-4 text-gray-700 sm:text-2xl">{venue.description}</p>
+      <p className="text-gray-600 sm:text-lg italic">
+        {venue?.location?.address} {venue?.location?.city},{' '}
+        {venue?.location?.country}
+      </p>
+      {venue.rating !== undefined && renderStars(venue.rating)}
       <h2 className="text-4xl font-semibold mb-2">Bookings</h2>
       <ul className="space-y-2">
         {venue.bookings?.map((booking) => (
