@@ -226,7 +226,6 @@ const BookingDashboard = () => {
           <div className="grid md:grid-cols-2 gap-4 cursor-pointer">
             {bookings.map((booking) => {
               const venue = booking.venue;
-              
               const location = [
                 venue?.location?.address,
                 venue?.location?.city,
@@ -249,10 +248,8 @@ const BookingDashboard = () => {
               };
 
               return (
-                <div className="py-4">
-                  <div key={booking.id} className="space-y-2">
-                    <BookingCard booking={booking} onCancel={handleCancel} />
-                  </div>
+                <div key={booking.id} className="py-4 space-y-2">
+                  <BookingCard booking={booking} onCancel={handleCancel} />
                 </div>
               );
             })}

@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect, useRef, useMemo } from "react";
-import axios from "axios";
-import { Loader2 } from "lucide-react";
-
-const BASE_URL = "https://v2.api.noroff.dev/holidaze";
-const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
+// src/components/UserMenu.jsx
+import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Loader2, X } from 'lucide-react';
+import {
+  getManagedVenues,
+  getUserBookings,
+} from '../utils/api';
 
 export default function UserMenu({ user, onLogout }) {
   const [open, setOpen] = useState(false);
@@ -12,29 +13,33 @@ export default function UserMenu({ user, onLogout }) {
   const [stats, setStats] = useState({ venues: 0, bookings: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
 
-  const avatarUrl = user?.avatar?.url ||
-    "https://ui-avatars.com/api/?name=" + encodeURIComponent(user?.name || "U") + "&background=random";
-
-  const accessToken = useMemo(() => localStorage.getItem("accessToken"), []);
-  const headers = useMemo(() => ({
-    Authorization: `Bearer ${accessToken}`,
-    "X-Noroff-API-Key": API_KEY,
-  }), [accessToken]);
+  const avatarUrl =
+    user?.avatar?.url ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=random`;
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
       }
-    }
-    function handleEscape(event) {
-      if (event.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+
+    const handleScroll = () => {
+      setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    window.addEventListener('scroll', handleScroll, true);
+
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('scroll', handleScroll, true);
     };
   }, []);
 
@@ -49,25 +54,29 @@ export default function UserMenu({ user, onLogout }) {
     const fetchStats = async () => {
       try {
         if (user.venueManager) {
-          const res = await axios.get(`${BASE_URL}/profiles/${user.name}/venues`, { headers });
-          const data = { venues: res.data.data.length };
-          setStats((prev) => ({ ...prev, ...data }));
-          sessionStorage.setItem(`stats-${user.name}`, JSON.stringify({ ...stats, ...data }));
+          const venues = await getManagedVenues(user.name);
+          setStats({ venues: venues.length });
+          sessionStorage.setItem(
+            `stats-${user.name}`,
+            JSON.stringify({ venues: venues.length })
+          );
         } else {
-          const res = await axios.get(`${BASE_URL}/profiles/${user.name}/bookings`, { headers });
-          const data = { bookings: res.data.data.length };
-          setStats((prev) => ({ ...prev, ...data }));
-          sessionStorage.setItem(`stats-${user.name}`, JSON.stringify({ ...stats, ...data }));
+          const bookings = await getUserBookings(user.name);
+          setStats({ bookings: bookings.length });
+          sessionStorage.setItem(
+            `stats-${user.name}`,
+            JSON.stringify({ bookings: bookings.length })
+          );
         }
       } catch (err) {
-        console.error("Stats fetch failed", err);
+        console.error('Stats fetch failed', err);
       } finally {
         setLoadingStats(false);
       }
     };
 
     fetchStats();
-  }, [user, headers]);
+  }, [user]);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -80,51 +89,72 @@ export default function UserMenu({ user, onLogout }) {
           alt="avatar"
           className="w-8 h-8 rounded-full object-cover border"
         />
-        <span>Hi, {user.name}</span>
+        <span>{user.name}</span>
       </button>
       <div
-        className={`absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg py-2 z-50 transition-all duration-200 ease-in-out transform ${open ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}
+        className={`absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg py-2 z-50 transition-all duration-300 ease-in-out transform ${
+          open ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+        }`}
       >
+        {/* Close Button (mobile-friendly) */}
+        <button
+          onClick={() => setOpen(false)}
+          className="absolute top-1 right-2 text-gray-400 hover:text-gray-600"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         <div className="relative h-20 rounded-t-xl overflow-hidden">
           <img
-            src={user.banner?.url || "https://picsum.photos/320/80"}
+            src={user.banner?.url || 'https://picsum.photos/320/80'}
             alt="banner"
             className="object-cover w-full h-full"
           />
           <img
             src={avatarUrl}
             alt="avatar"
-            className="absolute bottom-0 left-4 translate-y-1/2 w-10 h-10 rounded-full border-2 border-white"
+            className="absolute top-0 left-4 translate-y-1/2 w-10 h-10 rounded-full border-2 border-white"
           />
         </div>
         <div className="pt-6 px-4 pb-2 border-b border-gray-200 text-sm text-gray-700 space-y-1">
           <p className="font-semibold">{user.name}</p>
           <p className="text-xs text-gray-500">{user.email}</p>
           <p className="text-xs">
-            <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${user.venueManager ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}>
-              {user.venueManager ? "Venue Manager" : "Customer"}
+            <span
+              className={`inline-block px-2 py-0.5 text-xs rounded-full ${
+                user.venueManager
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'bg-green-100 text-green-700'
+              }`}
+            >
+              {user.venueManager ? 'Venue Manager' : 'Customer'}
             </span>
           </p>
-          {user.bio && <p className="text-xs text-gray-500 italic">“{user.bio}”</p>}
           <p className="text-xs mt-1">
             {loadingStats ? (
               <span className="flex items-center gap-1 text-gray-400">
                 <Loader2 className="w-3 h-3 animate-spin" /> Loading stats...
               </span>
-            ) : user.venueManager ? `${stats.venues} venue(s)` : `${stats.bookings} booking(s)`}
+            ) : user.venueManager ? (
+              `${stats.venues} venue(s)`
+            ) : (
+              `${stats.bookings} booking(s)`
+            )}
           </p>
         </div>
         <Link
-          to={user.venueManager ? "/venue-manager" : "/customer"}
+          to={user.venueManager ? '/venue-manager' : '/customer'}
+          onClick={() => setOpen(false)}
           className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
         >
           Dashboard
         </Link>
         <Link
           to="/profile"
+          onClick={() => setOpen(false)}
           className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
         >
-          View Profile
+          Venues
         </Link>
         <button
           onClick={onLogout}
