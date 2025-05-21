@@ -39,7 +39,7 @@ export default function BookingCard({ booking, onCancel }) {
 
       <section className="p-4 space-y-2">
         <h2 className="text-lg font-semibold truncate text-center">{venue?.name}</h2>
-        <p className="text-sm text-gray-600 text-center truncate">{location}</p>
+        <p className="text-sm text-gray-600 text-center truncate italic">📍{location}</p>
         <p className="text-sm text-gray-800 text-center">
           ${venue?.price} / night
         </p>

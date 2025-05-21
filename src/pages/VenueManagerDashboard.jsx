@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Pencil, Trash2, Plus, UserCog } from 'lucide-react';
+import BackButton from '../components/BackButton';
 import {
   deleteVenue,
   getVenues,
@@ -298,6 +299,7 @@ const VenueManagerDashboard = () => {
           onSave={handleAvatarUpdate}
         />
       )}
+      <BackButton />
     </main>
   );
 };

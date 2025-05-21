@@ -71,7 +71,7 @@ export default function SearchBar({ onFilterChange }) {
           startDate={startDate}
           endDate={endDate}
           onChange={(update) => setDateRange(update)}
-          placeholderText="Check in - Check out"
+          placeholderText="Check - in/out"
           className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#C07059]"
           aria-label="Date range"
         />

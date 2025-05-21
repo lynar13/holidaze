@@ -24,11 +24,11 @@ export default function VenueDetail() {
 
   const [venue, setVenue] = useState(null);
   const [guests, setGuests] = useState('');
+  const [guestError, setGuestError] = useState('');
   const [dateRange, setDateRange] = useState([null, null]);
   const [slideIndex, setSlideIndex] = useState(0);
   const [fullscreenImg, setFullscreenImg] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
-
   const intervalRef = useRef();
   const [startDate, endDate] = dateRange;
 
@@ -56,18 +56,23 @@ export default function VenueDetail() {
     return () => clearInterval(intervalRef.current);
   }, [venue]);
 
-  const pauseSlideshow = () => clearInterval(intervalRef.current);
-  const resumeSlideshow = () => {
-    if (intervalRef.current) return;
-    intervalRef.current = setInterval(() => {
-      setSlideIndex((prev) => (prev + 1) % venue.media.length);
-    }, 4000);
+  const handleGuestChange = (e) => {
+    const value = +e.target.value;
+    setGuests(value);
+
+    if (!value || value < 1) {
+      setGuestError('Guests must be at least 1');
+    } else if (venue && value > venue.maxGuests) {
+      setGuestError(`Max allowed is ${venue.maxGuests}`);
+    } else {
+      setGuestError('');
+    }
   };
 
   const bookVenue = async (e) => {
     e.preventDefault();
-    if (!startDate || !endDate || !guests) {
-      toast.error('Please fill all booking fields.');
+    if (!startDate || !endDate || !guests || guestError) {
+      toast.error('Please fill all booking fields correctly.');
       return;
     }
 
@@ -108,6 +113,7 @@ export default function VenueDetail() {
   };
 
   if (!venue) return <div className="text-center py-10">Loading venue...</div>;
+  const isPopular = (venue.meta?.bookings?.length || 0) >= 10;
 
   const location = [
     venue.location?.address,
@@ -116,8 +122,7 @@ export default function VenueDetail() {
   ]
     .filter(Boolean)
     .join(', ');
-
-  const isPopular = (venue.meta?.bookings?.length || 0) >= 10;
+  
 
   const excludedDates = [];
   venue.bookings?.forEach((b) => {
@@ -129,6 +134,17 @@ export default function VenueDetail() {
     }
   });
 
+  const pauseSlideshow = () => {
+    clearInterval(intervalRef.current);
+  };
+  
+  const resumeSlideshow = () => {
+    if (intervalRef.current) return;
+    intervalRef.current = setInterval(() => {
+      setSlideIndex((prev) => (prev + 1) % venue.media.length);
+    }, 4000);
+  };
+  
   return (
     <main className="font-[Poppins] max-w-4xl mx-auto p-4">
       <div className="border-2 border-[#C07059] rounded-2xl shadow container mx-auto px-4 py-8 font-[Poppins]">
@@ -155,7 +171,11 @@ export default function VenueDetail() {
               onClick={() => setFullscreenImg(venue.media[slideIndex].url)}
             />
             <button
-              onClick={() => setSlideIndex((i) => (i - 1 + venue.media.length) % venue.media.length)}
+              onClick={() =>
+                setSlideIndex(
+                  (i) => (i - 1 + venue.media.length) % venue.media.length
+                )
+              }
               className="absolute top-1/2 left-3 transform -translate-y-1/2 bg-white text-gray-800 shadow-md rounded-full p-2"
             >
               <ChevronLeftIcon className="h-5 w-5" />
@@ -174,16 +194,21 @@ export default function VenueDetail() {
             onClick={() => setFullscreenImg(null)}
             className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center"
           >
-            <img src={fullscreenImg} alt="Full View" className="max-w-full max-h-full" />
+            <img
+              src={fullscreenImg}
+              alt="Full View"
+              className="max-w-full max-h-full"
+            />
           </div>
         )}
 
         {/* Venue Details */}
         <p className="mb-2 text-gray-700">{venue.description}</p>
-        <p className="mb-2 text-sm text-gray-500">{location}</p>
-        <p className="mb-4 text-lg font-semibold">
-          ${venue.price} / night {venue.rating !== undefined && renderStars(venue.rating)}
-        </p>
+        <p className="mb-2 text-sm text-gray-500 italic">📍{location}</p>
+        <p className="mb-2 text-lg font-semibold">${venue.price} / night</p>
+        {venue.rating !== undefined && (
+          <p className="justify-left flex">{renderStars(venue.rating)}</p>
+        )}
 
         {/* Google Map */}
         {venue.location?.lat && venue.location?.lng && (
@@ -200,7 +225,7 @@ export default function VenueDetail() {
         )}
 
         {/* Calendar */}
-        <div className="bg-white rounded-2xl shadow-lg p-4 mb-6 w-full max-w-2xl mx-auto">
+        <div className="border-2 border-[#C07059] bg-white rounded-2xl shadow-lg p-4 mb-6 w-full max-w-2xl mx-auto">
           <div className="flex flex-col justify-between items-center mb-2">
             <h3 className="text-xl font-semibold">Availability</h3>
             <button
@@ -210,15 +235,21 @@ export default function VenueDetail() {
               {showCalendar ? 'Hide Calendar' : 'Show Calendar'}
             </button>
           </div>
-          <p className="text-sm text-gray-500 mb-4 text-center">Booked dates are marked in red</p>
+          <p className="text-sm text-gray-500 mb-4 text-center">
+            Booked dates are marked in red
+          </p>
           {(showCalendar || window.innerWidth >= 640) && (
             <div className="overflow-x-auto flex justify-center gap-2">
               <DatePicker
                 inline
                 monthsShown={window.innerWidth < 640 ? 1 : 2}
-                highlightDates={[{ 'react-datepicker__day--booked': excludedDates }]}
+                highlightDates={[
+                  { 'react-datepicker__day--booked': excludedDates },
+                ]}
                 dayClassName={(date) =>
-                  excludedDates.some((d) => d.toDateString() === date.toDateString())
+                  excludedDates.some(
+                    (d) => d.toDateString() === date.toDateString()
+                  )
                     ? 'booked-date'
                     : undefined
                 }
@@ -230,20 +261,25 @@ export default function VenueDetail() {
         {/* Booking Form */}
         <form
           onSubmit={bookVenue}
-          className="flex flex-col sm:flex-row flex-wrap justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-lg mb-6"
+          className="flex flex-col sm:flex-row flex-wrap border-2 border-[#C07059] justify-between items-center gap-4 bg-white p-4 rounded-2xl shadow-lg mb-6"
         >
           <div className="relative w-45">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400" size={18} />
+            <Calendar
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400"
+              size={18}
+            />
             <DatePicker
               selectsRange
               startDate={startDate}
               endDate={endDate}
               onChange={(update) => setDateRange(update)}
-              placeholderText="Check in - out"
+              placeholderText="Check - in/out"
               className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full"
               excludeDates={excludedDates}
               dayClassName={(date) =>
-                excludedDates.some((d) => d.toDateString() === date.toDateString())
+                excludedDates.some(
+                  (d) => d.toDateString() === date.toDateString()
+                )
                   ? 'booked-date'
                   : undefined
               }
@@ -251,20 +287,35 @@ export default function VenueDetail() {
           </div>
 
           <div className="relative w-45">
-            <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-red-400" size={18} />
+            <Users
+              className="absolute left-3 top-1/3 -translate-y-1/2 text-red-400"
+              size={18}
+            />
             <input
               type="number"
               min={1}
               value={guests}
-              onChange={(e) => setGuests(+e.target.value)}
-              className="pl-10 border-2 border-[#C07059] rounded-2xl px-4 py-2 w-full"
+              onChange={handleGuestChange}
+              className={`pl-10 border-2 px-4 py-2 w-full rounded-2xl ${
+                guestError ? 'border-red-500' : 'border-[#C07059]'
+              }`}
               placeholder="Guests"
             />
+            <p
+              className={`text-sm mt-1 ${guestError ? 'text-red-500' : 'text-gray-500'}`}
+            >
+              {guestError || `Max allowed: ${venue.maxGuests}`}
+            </p>
           </div>
 
           <button
             type="submit"
-            className="button-color text-white px-6 py-2 rounded-2xl hover:bg-black transition hover:scale-[1.02]"
+            disabled={guestError || !guests}
+            className={`font-semibold text-white px-6 py-2 rounded-2xl transition hover:scale-[1.02] ${
+              guestError || !guests
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'button-color hover:bg-black'
+            }`}
           >
             Confirm Booking
           </button>

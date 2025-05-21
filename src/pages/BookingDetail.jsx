@@ -70,13 +70,12 @@ export default function BookingDetail() {
 
         <div className="space-y-2">
           <h1 className="text-5xl font-bold flex items-center">{venue?.name}</h1>
-          <p className="text-gray-600">
-            {venue?.location?.address} {venue?.location?.city}, {venue?.location?.country}
+          <p className="text-gray-600 italic">
+          📍{venue?.location?.address} {venue?.location?.city}, {venue?.location?.country}
           </p>
           <p className='justify-left flex'>
           {venue.rating !== undefined && renderStars(venue.rating)}
           </p>
-
           <div className="text-gray-700 space-y-1 mt-4">
             <p><strong>Guests:</strong> {booking.guests}</p>
             <p><strong>Dates:</strong> {formattedFrom} → {formattedTo}</p>

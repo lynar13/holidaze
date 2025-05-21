@@ -18,6 +18,7 @@ import SearchBar from '../components/SearchBar';
 import SafeImage from '../components/SafeImage';
 import VenueCard from '../components/VenueCard';
 import BookingCard from '../components/BookingCard';
+import BackButton from '../components/BackButton';
 
 const BookingDashboard = () => {
   const { user, setUser } = useAuth();
@@ -258,6 +259,7 @@ const BookingDashboard = () => {
           </div>
         )}
       </section>
+      <BackButton />
     </main>
   );
 };

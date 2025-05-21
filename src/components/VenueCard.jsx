@@ -48,24 +48,24 @@ function VenueCard({ venue, index, filters }) {
           </div>
         )}
 
-        <section className="p-4 space-y-1 sm:space-y-2">
+        <section className="p-4 space-y-1 sm:space-y-2 text-center">
           <h2
-            className="flex justify-center text-base sm:text-lg font-semibold truncate"
+            className="text-base sm:text-lg font-semibold truncate"
             title={venue.name}
           >
             {venue.name}
           </h2>
 
           <p
-            className="flex justify-center text-sm text-gray-600 truncate"
+            className="text-sm text-gray-600 truncate"
             title={venue.description}
           >
             {venue.description}
           </p>
 
-          <p className="flex justify-center text-sm text-gray-500">{location}</p>
+          <p className="text-sm text-gray-500 italic">📍{location}</p>
 
-          <p className="flex justify-center text-sm font-medium text-gray-800">
+          <p className="text-sm font-medium text-gray-800">
             ${venue.price} / night
           </p>
 
@@ -77,10 +77,12 @@ function VenueCard({ venue, index, filters }) {
           )}
 
           {venue.rating !== undefined && (
-            <p className="flex justify-center text-sm">{renderStars(venue.rating)}</p>
+            <div className="flex justify-center">
+              {renderStars(venue.rating)}
+            </div>
           )}
-         
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-3">
+
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mt-3">
             <AvailabilityTag isAvailable={available} />
             {available && (
               <Link
