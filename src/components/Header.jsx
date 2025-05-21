@@ -23,6 +23,7 @@ export default function Header({ onSearch }) {
 
         {user ? (
           <UserMenu user={user} onLogout={handleLogout} />
+          
         ) : (
           <div className="flex space-x-4">
             <Link to="/login" className="text-white font-bold font-[Poppins]">

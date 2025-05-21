@@ -1,7 +1,7 @@
 // src/components/UserMenu.jsx
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, X, ChevronDown } from 'lucide-react';
 import {
   getManagedVenues,
   getUserBookings,
@@ -90,6 +90,7 @@ export default function UserMenu({ user, onLogout }) {
           className="w-8 h-8 rounded-full object-cover border"
         />
         <span>{user.name}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
       <div
         className={`absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg py-2 z-50 transition-all duration-300 ease-in-out transform ${
