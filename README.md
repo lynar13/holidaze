@@ -66,10 +66,9 @@ src/
 
 ## 🔧 Tailwind Theme Customization
 
-Located in `tailwind.config.js`:
+Located in `vite.config.js`:
 
 ```js
-// https://vite.dev/config/
 export default defineConfig({
   base: '/holidaze/',
   plugins: [react(), tailwindcss()], 
