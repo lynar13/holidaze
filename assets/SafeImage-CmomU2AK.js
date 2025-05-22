@@ -1,1 +1,0 @@
-import{b as n,j as c,y as i}from"./index-C-TlXThf.js";function p({src:e,alt:t="Image",className:o="",fallback:r="https://placehold.co/100x100"}){const[s,a]=n.useState(e||r),m=()=>{i.error("Invalid image URL"),a(r)};return c.jsx("img",{src:s,alt:t,className:o,onError:m})}export{p as S};
