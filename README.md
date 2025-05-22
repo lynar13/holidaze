@@ -69,15 +69,11 @@ src/
 Located in `tailwind.config.js`:
 
 ```js
-extend: {
-  colors: {
-    brand: { DEFAULT: '#ff7e5f', dark: '#e06b50', light: '#ffc2b3' },
-    surface: '#fefefe',
-  },
-  fontFamily: {
-    sans: ['Poppins', 'sans-serif']
-  }
-}
+// https://vite.dev/config/
+export default defineConfig({
+  base: '/holidaze/',
+  plugins: [react(), tailwindcss()], 
+})
 ```
 
 ## 🌐 API Docs
