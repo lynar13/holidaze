@@ -84,12 +84,15 @@ extend: {
 
 Powered by [Noroff Holidaze API](https://docs.noroff.dev/docs/v2/holidaze/)
 
-## ✨ Customization Ideas
+## ✨ Links
 
-- Dark mode support
-- Pagination or infinite scroll
-- Favorite/like venue feature
-- Admin dashboard for venue hosts
+- 🔗 [GitHub Repo](https://github.com/lynar13/holidaze )
+
+  - 🔗 [Demo Live URL](https://lynar13.github.io/holidaze/)
+
+  - 🔗 [Figma Style Guide](https://shorturl.at/BHsSC)
+
+  - 🔗 [Kanban/Project Board]( https://github.com/users/lynar13/projects/7)
 
 ## 📸 Screenshots
 

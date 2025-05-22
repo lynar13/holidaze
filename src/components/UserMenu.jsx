@@ -90,7 +90,7 @@ export default function UserMenu({ user, onLogout }) {
           className="w-8 h-8 rounded-full object-cover border"
         />
         <span>{user.name}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 transition-transform duration-200 cursor-pointer ${open ? 'rotate-180' : ''}`} />
       </button>
       <div
         className={`absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg py-2 z-50 transition-all duration-300 ease-in-out transform ${
@@ -98,12 +98,14 @@ export default function UserMenu({ user, onLogout }) {
         }`}
       >
         {/* Close Button (mobile-friendly) */}
+        <div className="relative pt-5 pb-2">
         <button
           onClick={() => setOpen(false)}
           className="absolute top-1 right-2 text-gray-400 hover:text-gray-600"
         >
           <X className="w-5 h-5" />
         </button>
+        </div>
 
         <div className="relative h-20 rounded-t-xl overflow-hidden">
           <img

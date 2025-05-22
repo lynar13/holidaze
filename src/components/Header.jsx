@@ -17,19 +17,24 @@ export default function Header({ onSearch }) {
   return (
     <header className="bg-mycolor shadow sticky top-0 z-50">
       <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-2xl font-bold font-[Poppins] text-white">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-2xl font-bold font-[Poppins] text-white"
+        >
           Holidaze
         </Link>
 
         {user ? (
           <UserMenu user={user} onLogout={handleLogout} />
-          
         ) : (
           <div className="flex space-x-4">
             <Link to="/login" className="text-white font-bold font-[Poppins]">
               Login
             </Link>
-            <Link to="/register" className="text-white font-bold font-[Poppins]">
+            <Link
+              to="/register"
+              className="text-white font-bold font-[Poppins]"
+            >
               Register
             </Link>
           </div>
