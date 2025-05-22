@@ -7,7 +7,7 @@ Modern responsive booking platform for venues built with React, Tailwind CSS, Vi
 - 🔐 **Authentication** – Login & Register using JWT
 - 🏨 **Venue Listings** – Full catalog of venues from API
 - ✅ **Booking System** – Availability checking & date validation
-- 🔍 **Smart Search** – Filter by location, guest count, and date
+- 🔍 **Smart Search** – Filter by location, venue name
 - 📅 **Date Picker** – Select check-in/out dates with `react-datepicker`
 - 🖼️ **Image Slideshow** – Fullscreen preview of venue media
 - 📍 **Map Integration** – Embed Google Maps location per venue
