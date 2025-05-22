@@ -96,9 +96,8 @@ Powered by [Noroff Holidaze API](https://docs.noroff.dev/docs/v2/holidaze/)
 
 ## 📸 Screenshots
 
-_Add screenshots/gifs in this section to show off the UI_
-
----
+![Homepage](../assets/DesktopHome.png)
+![Booking Page](../assets/MobileBookings1.png)
 
 Made with ❤️ using React + Tailwind + Vite by Romelyn 
 
